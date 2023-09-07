@@ -12,9 +12,9 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget *parent) :
     ui(new Ui::MediaPlayerWindow)
 {
     ui->setupUi(this);
+    setWindowTitle("Media Player");
 
     QGst::init(nullptr, nullptr);
-    QGst::init();
 
     pipeline = QGst::Parse::launch("playbin").dynamicCast<QGst::Pipeline>();
     if (!pipeline) {
@@ -23,8 +23,7 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget *parent) :
     }
 
     QGst::Ui::VideoWidget *video_widget = new QGst::Ui::VideoWidget;
-    QVBoxLayout *layout = new QVBoxLayout(ui->mediaBox);
-    layout->addWidget(video_widget);
+    ui->mediaBox->addWidget(video_widget);
 
     QUrl videoUrl = QUrl::fromLocalFile("/home/user/project/MediaPlayer/data/Monkey.mp4");
     pipeline->setProperty("uri", videoUrl.toString());
@@ -34,7 +33,13 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget *parent) :
     QGst::ElementPtr video_sink = pipeline->property("video-sink").get<QGst::ElementPtr>();
     video_widget->setVideoSink(video_sink);
 
-    this->setWindowTitle("Media Player");
+    // Слайдер громкости (+Label)
+    ui->volumeSlider->setRange(0, 100);
+    ui->volumeSlider->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    connect(ui->volumeSlider, &QSlider::valueChanged, [this](double volume) {
+        pipeline->setProperty("volume", volume / 100);
+        ui->volumeLabel->setText(QString("%1%").arg(volume));
+    });
 }
 
 MediaPlayerWindow::~MediaPlayerWindow()
