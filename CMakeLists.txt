@@ -1,38 +1,34 @@
-cmake_minimum_required(VERSION 3.5)
-
-project(MediaPlayer VERSION 0.1 LANGUAGES CXX)
+cmake_minimum_required(VERSION 2.8)
+project(MediaPlayer)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt5 COMPONENTS Widgets Multimedia MultimediaWidgets REQUIRED)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/modules)
+find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt5GStreamer REQUIRED)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GST REQUIRED gstreamer-1.0)
+include_directories(${QTGSTREAMER_INCLUDES})
+add_definitions(${QTGSTREAMER_DEFINITIONS})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${QTGSTREAMER_FLAGS}")
 
-include_directories(${GST_INCLUDE_DIRS})
-link_directories(${GST_LIBRARY_DIRS})
+set(${PROJECT_NAME} main.cpp media-player-window.cpp media-player-window.h media-player-window.ui)
 
-file(GLOB PROJECT_SOURCES
-    "src/*.cpp"
-    "src/*.h"
-    "src/*.ui"
-)
 
-add_executable(${PROJECT_NAME}
-    ${PROJECT_SOURCES}
-)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets Qt5::Multimedia Qt5::MultimediaWidgets ${GST_LIBRARIES})
-
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+add_executable(${PROJECT_NAME} main.cpp media-player-window.cpp media-player-window.h media-player-window.ui)
+target_link_libraries(${PROJECT_NAME} ${QTGSTREAMER_UI_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    Qt5::Core
+    Qt5::Widgets
+    ${GST_LIBRARIES}
+    ${GST_LIBRARY_DIRS}
+    ${Qt5GStreamer_LIBRARIES}
 )
