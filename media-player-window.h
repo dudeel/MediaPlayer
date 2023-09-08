@@ -16,4 +16,9 @@ public:
 private:
     Ui::MediaPlayerWindow *ui;
     QGst::PipelinePtr pipeline;
+
+    enum class SoundStatus{ ENABLED = 1, MUTED = 2 };
+    SoundStatus soundStatus = SoundStatus::ENABLED;
+
+    double soundVolume = 100;
 };

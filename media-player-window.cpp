@@ -1,7 +1,6 @@
 #include "media-player-window.h"
 #include "ui_media-player-window.h"
 
-#include <QVBoxLayout>
 #include <QUrl>
 #include <QtGStreamer/QGst/Init>
 #include <QtGStreamer/QGst/Parse>
@@ -37,8 +36,24 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget *parent) :
     ui->volumeSlider->setRange(0, 100);
     ui->volumeSlider->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     connect(ui->volumeSlider, &QSlider::valueChanged, [this](double volume) {
-        pipeline->setProperty("volume", volume / 100);
-        ui->volumeLabel->setText(QString("%1%").arg(volume));
+        soundVolume = volume;
+        pipeline->setProperty("volume", soundVolume / 100);
+        ui->volumeLabel->setText(QString("%1%").arg(soundVolume));
+        if (soundStatus == SoundStatus::MUTED) soundStatus = SoundStatus::ENABLED;
+    });
+    connect(ui->muteButton, &QPushButton::released, [this](){
+        switch (soundStatus) {
+        case SoundStatus::ENABLED:
+            pipeline->setProperty("volume", 0);
+            ui->volumeLabel->setText(QString("%1%").arg(soundVolume));
+            soundStatus = SoundStatus::MUTED;
+            break;
+        case SoundStatus::MUTED:
+            pipeline->setProperty("volume", soundVolume / 100);
+            ui->volumeLabel->setText(QString("%1%").arg(soundVolume));
+            soundStatus = SoundStatus::ENABLED;
+            break;
+        }
     });
 }
 

@@ -20,7 +20,7 @@ include_directories(${QTGSTREAMER_INCLUDES})
 add_definitions(${QTGSTREAMER_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${QTGSTREAMER_FLAGS}")
 
-set(${PROJECT_NAME} main.cpp media-player-window.cpp media-player-window.h media-player-window.ui)
+file(GLOB_RECURSE SRC_FILES *.cpp *.h *.ui)
 
 
 add_executable(${PROJECT_NAME} main.cpp media-player-window.cpp media-player-window.h media-player-window.ui)
