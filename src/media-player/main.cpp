@@ -1,16 +1,16 @@
 #include <QApplication>
 #include "media-player-window.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    QApplication app(argc, argv);
+  QApplication app(argc, argv);
 
-    MediaPlayerWindow *media = new MediaPlayerWindow();
-    media->show();
+  MediaPlayerWindow* media = new MediaPlayerWindow();
+  media->show();
 
-    return app.exec();
+  return app.exec();
 }
 
-    //MKV:  x264enc ! matroskamux
-    //WebM: vp8enc ! webmmux
-    //AVI:  x264enc ! avimux
+// MKV:  x264enc ! matroskamux
+// WebM: vp8enc ! webmmux
+// AVI:  x264enc ! avimux
