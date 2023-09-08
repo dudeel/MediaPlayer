@@ -17,7 +17,7 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget* parent) : QMainWindow(parent), ui(
   pipeline = QGst::Parse::launch("playbin").dynamicCast<QGst::Pipeline>();
   if (!pipeline)
   {
-    qCritical() << "Failed to create playbin";
+    qCritical() << "Не удалось создать QGst::PipelinePtr";
     return;
   }
 
@@ -35,6 +35,8 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget* parent) : QMainWindow(parent), ui(
   // Подключение слайдера громкости
   Sound* sound = new Sound(pipeline, ui->volumeSlider, ui->muteButton, ui->volumeLabel);
   sound->fastConnect();
+
+  // Подключение слайдера воспроиздения видео
 }
 
 MediaPlayerWindow::~MediaPlayerWindow()

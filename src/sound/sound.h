@@ -21,10 +21,11 @@ private:
     ENABLED = 1,
     MUTED = 2
   };
-  SoundStatus m_soundStatus = SoundStatus::ENABLED;
+  SoundStatus m_soundStatus;
 
 private:
-  double m_soundVolume = 100;
+  double m_soundVolume;
+  void loadParameters();
 
 private:
   QGst::PipelinePtr m_pipeline;

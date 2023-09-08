@@ -9,16 +9,32 @@ Sound::Sound(QObject* parent) : QObject(parent)
 Sound::Sound(QGst::PipelinePtr pipeline, QSlider* volumeSlider, QLabel* volumeLabel)
   : m_pipeline(pipeline), m_volumeSlider(volumeSlider), m_volumeLabel(volumeLabel)
 {
+  loadParameters();
 }
 
 Sound::Sound(QGst::PipelinePtr pipeline, QPushButton* muteButton, QLabel* volumeLabel)
   : m_pipeline(pipeline), m_muteButton(muteButton), m_volumeLabel(volumeLabel)
 {
+  loadParameters();
 }
 
 Sound::Sound(QGst::PipelinePtr pipeline, QSlider* volumeSlider, QPushButton* muteButton, QLabel* volumeLabel)
   : m_pipeline(pipeline), m_volumeSlider(volumeSlider), m_muteButton(muteButton), m_volumeLabel(volumeLabel)
 {
+  loadParameters();
+}
+
+void Sound::loadParameters()
+{
+  m_soundStatus = SoundStatus::ENABLED;
+  m_soundVolume = 100;
+  m_pipeline->setProperty("volume", m_soundVolume / 100);
+
+  if (m_volumeSlider)
+    m_volumeSlider->setValue(m_volumeSlider->maximum());
+
+  if (m_volumeLabel)
+    m_volumeLabel->setText(QString("%1%").arg(m_soundVolume));
 }
 
 bool Sound::setSettings()
@@ -37,14 +53,14 @@ bool Sound::setSettings()
 
 bool Sound::connectVolumeSlider()
 {
-  if (!m_volumeSlider)
-  {
-    qCritical() << "Вы не передали в конструктор класса: QSlider";
-    return false;
-  }
-  else if (!m_pipeline)
+  if (!m_pipeline)
   {
     qCritical() << "Вы не передали в конструктор класса: QGst::PipelinePtr";
+    return false;
+  }
+  else if (!m_volumeSlider)
+  {
+    qCritical() << "Вы не передали в конструктор класса: QSlider";
     return false;
   }
   else if (!m_volumeLabel)
@@ -69,14 +85,14 @@ bool Sound::connectVolumeSlider()
 
 bool Sound::connectMuteButton()
 {
-  if (!m_muteButton)
-  {
-    qCritical() << "Вы не передали в конструктор класса: QPushButton";
-    return false;
-  }
-  else if (!m_pipeline)
+  if (!m_pipeline)
   {
     qCritical() << "Вы не передали в конструктор класса: QGst::PipelinePtr";
+    return false;
+  }
+  else if (!m_muteButton)
+  {
+    qCritical() << "Вы не передали в конструктор класса: QPushButton";
     return false;
   }
   else if (!m_volumeLabel)
@@ -110,6 +126,10 @@ bool Sound::connectMuteButton()
 void Sound::fastConnect()
 {
   setSettings();
+
+  if (!m_pipeline)
+    return;
+
   connectVolumeSlider();
   connectMuteButton();
 }
