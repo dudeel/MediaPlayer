@@ -2,18 +2,20 @@
 #include <QtGStreamer/QGst/Pipeline>
 #include <QtGStreamer/QGst/Ui/VideoWidget>
 
-namespace Ui {
+namespace Ui
+{
 class MediaPlayerWindow;
 }
 
-class MediaPlayerWindow : public QMainWindow {
-    Q_OBJECT
+class MediaPlayerWindow : public QMainWindow
+{
+  Q_OBJECT
 
 public:
-    explicit MediaPlayerWindow(QWidget *parent = nullptr);
-    ~MediaPlayerWindow();
+  explicit MediaPlayerWindow(QWidget* parent = nullptr);
+  ~MediaPlayerWindow();
 
 private:
-    Ui::MediaPlayerWindow *ui;
-    QGst::PipelinePtr pipeline;
+  Ui::MediaPlayerWindow* ui;
+  QGst::PipelinePtr pipeline;
 };
