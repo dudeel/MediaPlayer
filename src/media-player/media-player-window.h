@@ -1,6 +1,6 @@
 #include <QMainWindow>
-#include <QtGStreamer/QGst/Pipeline>
-#include <QtGStreamer/QGst/Ui/VideoWidget>
+#include <QGst/Pipeline>
+#include "player/player.h"
 
 namespace Ui
 {
@@ -18,4 +18,5 @@ public:
 private:
   Ui::MediaPlayerWindow* ui;
   QGst::PipelinePtr pipeline;
+  Player* m_player;
 };

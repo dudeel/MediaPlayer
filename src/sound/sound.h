@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QObject>
-#include <QtGStreamer/QGst/Pipeline>
 #include <QSlider>
 #include <QPushButton>
 #include <QLabel>
+
+#include <QGst/Pipeline>
 
 class Sound : public QObject
 {
