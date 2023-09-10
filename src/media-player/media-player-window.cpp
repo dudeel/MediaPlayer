@@ -18,7 +18,7 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
   ui->setupUi(this);
   setWindowTitle("Media Player");
 
-  QObject::connect(ui->openFile, &QAction::triggered, this, [this]() {
+  QObject::connect(ui->openFile, &QAction::triggered, [this]() {
     QString filter = tr("Формат (*.mp4 *.avi *.mkv)");
     QString selected_filter;
 
@@ -34,16 +34,7 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
     }
   });
 
-  QObject::connect(ui->exit, &QAction::triggered, this, [this]() { this->close(); });
-
-  QObject::connect(ui->timePreview, &QAction::triggered, this, [this]() {});
-  QObject::connect(ui->timeNext, &QAction::triggered, this, [this]() {});
-  QObject::connect(ui->playVideo, &QAction::triggered, this, [this]() {});
-  QObject::connect(ui->stopVideo, &QAction::triggered, this, [this]() {});
-
-  QObject::connect(ui->addVolume, &QAction::triggered, this, [this]() {});
-  QObject::connect(ui->removeVolume, &QAction::triggered, this, [this]() {});
-  QObject::connect(ui->enableVolume, &QAction::triggered, this, [this]() {});
+  QObject::connect(ui->exit, &QAction::triggered, [this]() { close(); });
 }
 
 void MediaPlayerWindow::showVideo(const QUrl& videoUrl)
@@ -102,10 +93,17 @@ void MediaPlayerWindow::initAddons()
 {
   Sound* sound = new Sound(pipeline, ui->volumeSlider, ui->muteButton, ui->volumeLabel);
   sound->fastConnect();
+  QObject::connect(ui->addVolume, &QAction::triggered, [sound]() { sound->addVolume(); });
+  QObject::connect(ui->removeVolume, &QAction::triggered, [sound]() { sound->removeVolume(); });
+  QObject::connect(ui->enableVolume, &QAction::triggered, [sound]() { sound->mute(); });
 
   Player* player = new Player(pipeline, ui->timeSlider, ui->currentTimeText, ui->maxTimeText, ui->stopButton,
                               ui->pauseButton, ui->previewButton, ui->nextButton, this);
   player->fastConnect();
+  QObject::connect(ui->timePreview, &QAction::triggered, [player]() { player->preview(); });
+  QObject::connect(ui->timeNext, &QAction::triggered, [player]() { player->next(); });
+  QObject::connect(ui->playVideo, &QAction::triggered, [player]() { player->pause(); });
+  QObject::connect(ui->stopVideo, &QAction::triggered, [player]() { player->stop(); });
 
   // Подключение нейросети YOLOv3
   m_yolo_enabled = false;

@@ -101,27 +101,72 @@ bool Sound::connectMuteButton()
     qInfo() << "Вы не передали в конструктор класса QLabel, отображение текста отключено";
   }
 
-  QObject::connect(m_muteButton, &QPushButton::released, [this]() {
-    switch (m_soundStatus)
-    {
-      case SoundStatus::ENABLE:
-        m_pipeline->setProperty("volume", 0);
-        m_soundStatus = SoundStatus::DISABLE;
-
-        break;
-
-      case SoundStatus::DISABLE:
-        m_pipeline->setProperty("volume", m_soundVolume / 100);
-        m_soundStatus = SoundStatus::ENABLE;
-
-        break;
-    }
-
-    if (m_volumeLabel)
-      m_volumeLabel->setText(QString("%1%").arg(m_soundVolume));
-  });
+  QObject::connect(m_muteButton, &QPushButton::released, [this]() { mute(); });
 
   return true;
+}
+
+void Sound::mute()
+{
+  switch (m_soundStatus)
+  {
+    case SoundStatus::ENABLE:
+      m_pipeline->setProperty("volume", 0);
+      m_soundStatus = SoundStatus::DISABLE;
+
+      break;
+
+    case SoundStatus::DISABLE:
+      m_pipeline->setProperty("volume", m_soundVolume / 100);
+      m_soundStatus = SoundStatus::ENABLE;
+
+      break;
+  }
+
+  if (m_volumeLabel)
+    m_volumeLabel->setText(QString("%1%").arg(m_soundVolume));
+}
+
+void Sound::addVolume()
+{
+  m_soundVolume += m_percent;
+  if (m_soundVolume > 100)
+  {
+    m_soundVolume = 100;
+  }
+
+  m_pipeline->setProperty("volume", m_soundVolume / 100);
+
+  if (m_volumeSlider)
+  {
+    m_volumeSlider->setValue(static_cast<int>(m_soundVolume));
+  }
+
+  if (m_volumeLabel)
+  {
+    m_volumeLabel->setText(QString("%1%").arg(m_soundVolume));
+  }
+}
+
+void Sound::removeVolume()
+{
+  m_soundVolume -= m_percent;
+  if (m_soundVolume < 0)
+  {
+    m_soundVolume = 0;
+  }
+
+  m_pipeline->setProperty("volume", m_soundVolume / 100);
+
+  if (m_volumeSlider)
+  {
+    m_volumeSlider->setValue(static_cast<int>(m_soundVolume));
+  }
+
+  if (m_volumeLabel)
+  {
+    m_volumeLabel->setText(QString("%1%").arg(m_soundVolume));
+  }
 }
 
 void Sound::fastConnect()

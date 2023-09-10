@@ -33,6 +33,7 @@ private:
 
 private:
   QGst::PipelinePtr m_pipeline;
+  const int m_percent = 15;
 
 private:
   QSlider* m_volumeSlider = nullptr;
@@ -49,4 +50,9 @@ public:
   bool connectMuteButton();
 
   void fastConnect();
+
+public:
+  void mute();
+  void addVolume();
+  void removeVolume();
 };

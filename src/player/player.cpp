@@ -119,14 +119,7 @@ bool Player::connectStopButton()
     return false;
   }
 
-  QObject::connect(m_stopButton, &QPushButton::clicked, [this]() {
-    setPosition(QTime(0, 0));
-    if (m_videoStatus == VideoStatus::PLAYING)
-    {
-      m_pipeline->setState(QGst::StatePaused);
-      m_videoStatus = VideoStatus::PAUSED;
-    }
-  });
+  QObject::connect(m_stopButton, &QPushButton::clicked, [this]() { stop(); });
 
   return true;
 }
@@ -139,20 +132,32 @@ bool Player::connectPauseButton()
     return false;
   }
 
-  QObject::connect(m_pauseButton, &QPushButton::clicked, [this]() {
-    if (m_videoStatus == VideoStatus::PLAYING)
-    {
-      m_pipeline->setState(QGst::StatePaused);
-      m_videoStatus = VideoStatus::PAUSED;
-    }
-    else
-    {
-      m_pipeline->setState(QGst::StatePlaying);
-      m_videoStatus = VideoStatus::PLAYING;
-    }
-  });
+  QObject::connect(m_pauseButton, &QPushButton::clicked, [this]() { pause(); });
 
   return true;
+}
+void Player::pause()
+{
+  if (m_videoStatus == VideoStatus::PLAYING)
+  {
+    m_pipeline->setState(QGst::StatePaused);
+    m_videoStatus = VideoStatus::PAUSED;
+  }
+  else
+  {
+    m_pipeline->setState(QGst::StatePlaying);
+    m_videoStatus = VideoStatus::PLAYING;
+  }
+}
+
+void Player::stop()
+{
+  setPosition(QTime(0, 0));
+  if (m_videoStatus == VideoStatus::PLAYING)
+  {
+    m_pipeline->setState(QGst::StatePaused);
+    m_videoStatus = VideoStatus::PAUSED;
+  }
 }
 
 bool Player::connectPreviewButton()

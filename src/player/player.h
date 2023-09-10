@@ -82,6 +82,8 @@ public:
   void fastConnect();
 
 public:
+  void stop();
+  void pause();
   void preview();
   void next();
 };
