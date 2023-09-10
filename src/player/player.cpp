@@ -17,19 +17,93 @@ Player::Player(QWidget* parent) : QGst::Ui::VideoWidget(parent)
   Q_UNUSED(parent);
 }
 
-Player::Player(QGst::PipelinePtr pipeline, QWidget* parent) : m_pipeline(pipeline)
+Player::Player(QGst::PipelinePtr pipeline, QSlider* timeSlider, QLabel* currentTimeText, QLabel* maxTimeText,
+               QWidget* parent)
+  : m_pipeline(pipeline), m_timeSlider(timeSlider), m_currentTimeText(currentTimeText), m_maxTimeText(maxTimeText)
 {
   Q_UNUSED(parent);
-  connect(&m_positionTimer, SIGNAL(timeout()), this, SIGNAL(positionChanged()));
+  loadParameters();
 }
 
-Player::~Player()
+void Player::loadParameters()
 {
-  if (m_pipeline)
+  m_videoStatus = VideoStatus::PLAYING;
+  m_sliderStatus = SliderStatus::UNPRESSED;
+
+  m_currentTimeText->setText(position().toString("hh:mm:ss"));
+  m_maxTimeText->setText(length().toString("hh:mm:ss"));
+}
+
+void Player::createTimer()
+{
+  QTimer* timer = new QTimer();
+
+  connect(timer, &QTimer::timeout, [this]() {
+    double currentPositionSlider = static_cast<double>(position().msecsTo(QTime(0, 0))) / length().msecsTo(QTime(0, 0));
+    m_timeSlider->setValue(static_cast<int>(currentPositionSlider * length().msecsSinceStartOfDay()));
+  });
+
+  timer->start(10);
+
+  m_timeSlider->setTickInterval(10);
+  m_timeSlider->setMaximum(length().msecsSinceStartOfDay());
+}
+
+bool Player::connectVideoSlider()
+{
+  if (!m_pipeline)
   {
-    m_pipeline->setState(QGst::StateNull);
-    stopPipelineWatch();
+    qCritical() << "Вы не передали в конструктор класса: QGst::PipelinePtr";
+    return false;
   }
+  else if (!m_timeSlider)
+  {
+    qCritical() << "Вы не передали в конструктор класса: QSlider";
+    return false;
+  }
+  else if (!m_currentTimeText)
+  {
+    qInfo() << "Вы не передали в конструктор класса QLabel, отображение текущего времени видео отключено";
+  }
+  else if (!m_maxTimeText)
+  {
+    qInfo() << "Вы не передали в конструктор класса QLabel, отображение общего времени видео отключено";
+  }
+
+  connect(m_timeSlider, &QSlider::sliderPressed, [this]() {
+    m_isSliderPressed = true;
+    qDebug() << "slider Pressed";
+  });
+
+  connect(m_timeSlider, &QSlider::sliderReleased, [this]() {
+    m_isSliderPressed = false;
+    qDebug() << "slider unpressed";
+
+    double value = m_timeSlider->value();
+    double duration = length().msecsSinceStartOfDay();
+
+    if (duration != 0.0 && value > 0.0)
+    {
+      QTime pos(0, 0);
+      pos = pos.addMSecs(static_cast<int>((value / static_cast<double>(duration)) * duration));
+      this->setPosition(pos);
+    }
+
+    m_currentTimeText->setText(position().toString("hh:mm:ss"));
+  });
+
+  connect(m_timeSlider, &QSlider::valueChanged, [this]() {
+    m_currentTimeText->setText(position().toString("hh:mm:ss"));
+    m_maxTimeText->setText(this->length().toString("hh:mm:ss"));
+  });
+
+  return true;
+}
+
+void Player::fastConnect()
+{
+  createTimer();
+  connectVideoSlider();
 }
 
 QTime Player::position() const
@@ -66,5 +140,14 @@ QTime Player::length() const
   else
   {
     return QTime(0, 0);
+  }
+}
+
+Player::~Player()
+{
+  if (m_pipeline)
+  {
+    m_pipeline->setState(QGst::StateNull);
+    stopPipelineWatch();
   }
 }
