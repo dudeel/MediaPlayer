@@ -9,6 +9,7 @@
 #include <QTimer>
 
 #include "sound/sound.h"
+#include "player/player.h"
 
 // 1. Установите OpenCV, YOLOv3 и добавьте заголовки и модели.
 #include <opencv2/opencv.hpp>
@@ -82,7 +83,8 @@ void MediaPlayerWindow::initSoundAndPlayer()
   sound->fastConnect();
 
   // Подключение слайдера видео
-  Player* player = new Player(pipeline, ui->timeSlider, ui->currentTimeText, ui->maxTimeText, this);
+  Player* player = new Player(pipeline, ui->timeSlider, ui->currentTimeText, ui->maxTimeText, ui->stopButton,
+                              ui->pauseButton, ui->previewButton, ui->nextButton, this);
   player->fastConnect();
 
   // Подключение нейросети YOLOv3

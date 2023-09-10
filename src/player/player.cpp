@@ -18,8 +18,16 @@ Player::Player(QWidget* parent) : QGst::Ui::VideoWidget(parent)
 }
 
 Player::Player(QGst::PipelinePtr pipeline, QSlider* timeSlider, QLabel* currentTimeText, QLabel* maxTimeText,
+               QPushButton* stopButton, QPushButton* pauseButton, QPushButton* previewButton, QPushButton* nextButton,
                QWidget* parent)
-  : m_pipeline(pipeline), m_timeSlider(timeSlider), m_currentTimeText(currentTimeText), m_maxTimeText(maxTimeText)
+  : m_pipeline(pipeline)
+  , m_timeSlider(timeSlider)
+  , m_currentTimeText(currentTimeText)
+  , m_maxTimeText(maxTimeText)
+  , m_stopButton(stopButton)
+  , m_pauseButton(pauseButton)
+  , m_previewButton(previewButton)
+  , m_nextButton(nextButton)
 {
   Q_UNUSED(parent);
   loadParameters();
@@ -37,6 +45,7 @@ void Player::loadParameters()
 void Player::createTimer()
 {
   QTimer* timer = new QTimer();
+  const quint8 sliderUpdateInterval = 10;
 
   connect(timer, &QTimer::timeout, [this]() {
     if (m_sliderStatus == SliderStatus::PRESSED)
@@ -46,9 +55,9 @@ void Player::createTimer()
     m_timeSlider->setValue(static_cast<int>(currentPositionSlider * length().msecsSinceStartOfDay()));
   });
 
-  timer->start(10);
+  timer->start(sliderUpdateInterval);
 
-  m_timeSlider->setTickInterval(10);
+  m_timeSlider->setTickInterval(sliderUpdateInterval);
   m_timeSlider->setMaximum(length().msecsSinceStartOfDay());
 }
 
@@ -111,10 +120,95 @@ bool Player::connectVideoSlider()
   return true;
 }
 
+bool Player::connectStopButton()
+{
+  if (!m_stopButton)
+  {
+    qCritical() << Q_FUNC_INFO << "Вы не передали в конструктор класса: QPushButton";
+    return false;
+  }
+
+  connect(m_stopButton, &QPushButton::clicked, [this]() {
+    setPosition(QTime(0, 0));
+    if (m_videoStatus == VideoStatus::PLAYING)
+    {
+      m_pipeline->setState(QGst::StatePaused);
+      m_videoStatus = VideoStatus::PAUSED;
+    }
+  });
+
+  return true;
+}
+
+bool Player::connectPauseButton()
+{
+  if (!m_pauseButton)
+  {
+    qCritical() << Q_FUNC_INFO << "Вы не передали в конструктор класса: QPushButton";
+    return false;
+  }
+
+  connect(m_pauseButton, &QPushButton::clicked, [this]() {
+    if (m_videoStatus == VideoStatus::PLAYING)
+    {
+      m_pipeline->setState(QGst::StatePaused);
+      m_videoStatus = VideoStatus::PAUSED;
+    }
+    else
+    {
+      m_pipeline->setState(QGst::StatePlaying);
+      m_videoStatus = VideoStatus::PLAYING;
+    }
+  });
+
+  return true;
+}
+
+bool Player::connectPreviewButton()
+{
+  if (!m_previewButton)
+  {
+    qCritical() << Q_FUNC_INFO << "Вы не передали в конструктор класса: QPushButton";
+    return false;
+  }
+
+  connect(m_previewButton, &QPushButton::clicked, [this]() {
+    QTime currentPos = position();
+    int newPositionInMilliseconds = std::max(currentPos.msecsSinceStartOfDay() - 10000, 0);
+    QTime newPosition = QTime(0, 0).addMSecs(newPositionInMilliseconds);
+    setPosition(newPosition);
+  });
+
+  return true;
+}
+
+bool Player::connectNextButton()
+{
+  if (!m_nextButton)
+  {
+    qCritical() << Q_FUNC_INFO << "Вы не передали в конструктор класса: QPushButton";
+    return false;
+  }
+
+  connect(m_nextButton, &QPushButton::clicked, [this]() {
+    QTime currentPos = position();
+    int newPositionInMilliseconds =
+        std::min(currentPos.msecsSinceStartOfDay() + 10000, length().msecsSinceStartOfDay());
+    QTime newPosition = QTime(0, 0).addMSecs(newPositionInMilliseconds);
+    setPosition(newPosition);
+  });
+
+  return true;
+}
+
 void Player::fastConnect()
 {
   createTimer();
   connectVideoSlider();
+  connectStopButton();
+  connectPauseButton();
+  connectPreviewButton();
+  connectNextButton();
 }
 
 QTime Player::position() const

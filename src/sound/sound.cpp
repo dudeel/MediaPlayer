@@ -26,7 +26,7 @@ Sound::Sound(QGst::PipelinePtr pipeline, QSlider* volumeSlider, QPushButton* mut
 
 void Sound::loadParameters()
 {
-  m_soundStatus = SoundStatus::ENABLED;
+  m_soundStatus = SoundStatus::ENABLE;
   m_soundVolume = 100;
   m_pipeline->setProperty("volume", m_soundVolume / 100);
 
@@ -76,8 +76,8 @@ bool Sound::connectVolumeSlider()
     if (m_volumeLabel)
       m_volumeLabel->setText(QString("%1%").arg(m_soundVolume));
 
-    if (m_soundStatus == SoundStatus::MUTED)
-      m_soundStatus = SoundStatus::ENABLED;
+    if (m_soundStatus == SoundStatus::DISABLE)
+      m_soundStatus = SoundStatus::ENABLE;
   });
 
   return true;
@@ -103,15 +103,15 @@ bool Sound::connectMuteButton()
   QObject::connect(m_muteButton, &QPushButton::released, [this]() {
     switch (m_soundStatus)
     {
-      case SoundStatus::ENABLED:
+      case SoundStatus::ENABLE:
         m_pipeline->setProperty("volume", 0);
-        m_soundStatus = SoundStatus::MUTED;
+        m_soundStatus = SoundStatus::DISABLE;
 
         break;
 
-      case SoundStatus::MUTED:
+      case SoundStatus::DISABLE:
         m_pipeline->setProperty("volume", m_soundVolume / 100);
-        m_soundStatus = SoundStatus::ENABLED;
+        m_soundStatus = SoundStatus::ENABLE;
 
         break;
     }

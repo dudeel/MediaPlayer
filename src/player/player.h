@@ -7,6 +7,7 @@
 #include <QTime>
 #include <QGst/Pipeline>
 #include <QGst/Ui/VideoWidget>
+#include <QPushButton>
 
 class Player : public QGst::Ui::VideoWidget
 {
@@ -14,7 +15,8 @@ class Player : public QGst::Ui::VideoWidget
 public:
   Player(QWidget* parent = nullptr);
   Player(QGst::PipelinePtr pipeline, QSlider* timeSlider, QLabel* currentTimeText = nullptr,
-         QLabel* maxTimeText = nullptr, QWidget* parent = nullptr);
+         QLabel* maxTimeText = nullptr, QPushButton* stopButton = nullptr, QPushButton* pauseButton = nullptr,
+         QPushButton* previewButton = nullptr, QPushButton* nextButton = nullptr, QWidget* parent = nullptr);
   ~Player();
 
 private:
@@ -41,6 +43,11 @@ private:
   QLabel* m_currentTimeText = nullptr;
   QLabel* m_maxTimeText = nullptr;
 
+  QPushButton* m_stopButton = nullptr;
+  QPushButton* m_pauseButton = nullptr;
+  QPushButton* m_previewButton = nullptr;
+  QPushButton* m_nextButton = nullptr;
+
 private:
   QTime position() const;
   QTime length() const;
@@ -52,5 +59,9 @@ private:
 public:
   //  bool setSettings();
   bool connectVideoSlider();
+  bool connectStopButton();
+  bool connectPauseButton();
+  bool connectPreviewButton();
+  bool connectNextButton();
   void fastConnect();
 };

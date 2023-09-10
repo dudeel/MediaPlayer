@@ -1,10 +1,9 @@
 #include <QMainWindow>
-#include <QGst/Pipeline>
-#include "player/player.h"
 
+#include <QEventLoop>
+#include <QGst/Pipeline>
 #include <opencv2/opencv.hpp>
 #include <opencv2/dnn/dnn.hpp>
-#include <QEventLoop>
 
 using namespace cv;
 using namespace dnn;
@@ -25,9 +24,7 @@ public:
 private:
   Ui::MediaPlayerWindow* ui;
   QGst::PipelinePtr pipeline;
-  Player* m_player;
 
-  QGst::Ui::VideoWidget* video_widget;
   Net net;
   bool m_yolo_enabled;
   QTimer* m_timer;

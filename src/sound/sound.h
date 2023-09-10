@@ -19,8 +19,8 @@ public:
 private:
   enum class SoundStatus
   {
-    ENABLED = 1,
-    MUTED = 2
+    ENABLE = 1,  // Звук включен
+    DISABLE = 2  // Звук отключен
   };
   SoundStatus m_soundStatus;
 
