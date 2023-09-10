@@ -1,4 +1,5 @@
 #include "sound.h"
+
 #include <QDebug>
 
 Sound::Sound(QObject* parent) : QObject(parent)

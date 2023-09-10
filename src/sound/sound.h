@@ -10,8 +10,11 @@
 class Sound : public QObject
 {
   Q_OBJECT
+
 public:
   explicit Sound(QObject* parent = nullptr);
+
+public:
   Sound(QGst::PipelinePtr pipeline, QSlider* volumeSlider, QLabel* volumeLabel = nullptr);
   Sound(QGst::PipelinePtr pipeline, QPushButton* muteButton, QLabel* volumeLabel = nullptr);
   Sound(QGst::PipelinePtr pipeline, QSlider* volumeSlider, QPushButton* muteButton, QLabel* volumeLabel = nullptr);
@@ -30,8 +33,14 @@ private:
 
 private:
   QGst::PipelinePtr m_pipeline;
+
+private:
   QSlider* m_volumeSlider = nullptr;
+
+private:
   QPushButton* m_muteButton = nullptr;
+
+private:
   QLabel* m_volumeLabel = nullptr;
 
 public:

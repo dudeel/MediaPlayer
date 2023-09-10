@@ -1,16 +1,7 @@
 #include "player.h"
-#include <QDir>
-#include <QUrl>
-#include <QGlib/Connect>
-#include <QGlib/Error>
-#include <QGst/Pipeline>
-#include <QGst/ElementFactory>
-#include <QGst/Bus>
-#include <QGst/Message>
+
 #include <QGst/Query>
-#include <QGst/ClockTime>
 #include <QGst/Event>
-#include <QGst/StreamVolume>
 
 Player::Player(QWidget* parent) : QGst::Ui::VideoWidget(parent)
 {
