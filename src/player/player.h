@@ -41,8 +41,6 @@ private:
   QLabel* m_currentTimeText = nullptr;
   QLabel* m_maxTimeText = nullptr;
 
-  bool m_isSliderPressed;
-
 private:
   QTime position() const;
   QTime length() const;

@@ -39,6 +39,9 @@ void Player::createTimer()
   QTimer* timer = new QTimer();
 
   connect(timer, &QTimer::timeout, [this]() {
+    if (m_sliderStatus == SliderStatus::PRESSED)
+      return;
+
     double currentPositionSlider = static_cast<double>(position().msecsTo(QTime(0, 0))) / length().msecsTo(QTime(0, 0));
     m_timeSlider->setValue(static_cast<int>(currentPositionSlider * length().msecsSinceStartOfDay()));
   });
@@ -70,14 +73,10 @@ bool Player::connectVideoSlider()
     qInfo() << "Вы не передали в конструктор класса QLabel, отображение общего времени видео отключено";
   }
 
-  connect(m_timeSlider, &QSlider::sliderPressed, [this]() {
-    m_isSliderPressed = true;
-    qDebug() << "slider Pressed";
-  });
+  connect(m_timeSlider, &QSlider::sliderPressed, [this]() { m_sliderStatus = SliderStatus::PRESSED; });
 
   connect(m_timeSlider, &QSlider::sliderReleased, [this]() {
-    m_isSliderPressed = false;
-    qDebug() << "slider unpressed";
+    m_sliderStatus = SliderStatus::UNPRESSED;
 
     double value = m_timeSlider->value();
     double duration = length().msecsSinceStartOfDay();
@@ -88,13 +87,25 @@ bool Player::connectVideoSlider()
       pos = pos.addMSecs(static_cast<int>((value / static_cast<double>(duration)) * duration));
       this->setPosition(pos);
     }
-
-    m_currentTimeText->setText(position().toString("hh:mm:ss"));
   });
 
   connect(m_timeSlider, &QSlider::valueChanged, [this]() {
-    m_currentTimeText->setText(position().toString("hh:mm:ss"));
-    m_maxTimeText->setText(this->length().toString("hh:mm:ss"));
+    if (m_sliderStatus == SliderStatus::PRESSED)
+    {
+      double value = m_timeSlider->value();
+      double duration = length().msecsSinceStartOfDay();
+
+      if (duration != 0.0 && value > 0.0)
+      {
+        QTime currentTime(0, 0);
+        currentTime = currentTime.addMSecs(static_cast<int>((value / static_cast<double>(duration)) * duration));
+        m_currentTimeText->setText(currentTime.toString("hh:mm:ss"));
+      }
+    }
+    else
+    {
+      m_currentTimeText->setText(position().toString("hh:mm:ss"));
+    }
   });
 
   return true;
