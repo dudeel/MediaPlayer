@@ -38,7 +38,7 @@ void Player::createTimer()
   QTimer* timer = new QTimer();
   const quint8 sliderUpdateInterval = 10;
 
-  connect(timer, &QTimer::timeout, [this]() {
+  QObject::connect(timer, &QTimer::timeout, [this]() {
     if (m_sliderStatus == SliderStatus::PRESSED)
       return;
 
@@ -73,9 +73,9 @@ bool Player::connectVideoSlider()
     qInfo() << "Вы не передали в конструктор класса QLabel, отображение общего времени видео отключено";
   }
 
-  connect(m_timeSlider, &QSlider::sliderPressed, [this]() { m_sliderStatus = SliderStatus::PRESSED; });
+  QObject::connect(m_timeSlider, &QSlider::sliderPressed, [this]() { m_sliderStatus = SliderStatus::PRESSED; });
 
-  connect(m_timeSlider, &QSlider::sliderReleased, [this]() {
+  QObject::connect(m_timeSlider, &QSlider::sliderReleased, [this]() {
     m_sliderStatus = SliderStatus::UNPRESSED;
 
     double value = m_timeSlider->value();
@@ -89,7 +89,7 @@ bool Player::connectVideoSlider()
     }
   });
 
-  connect(m_timeSlider, &QSlider::valueChanged, [this]() {
+  QObject::connect(m_timeSlider, &QSlider::valueChanged, [this]() {
     if (m_sliderStatus == SliderStatus::PRESSED)
     {
       double value = m_timeSlider->value();
@@ -119,7 +119,7 @@ bool Player::connectStopButton()
     return false;
   }
 
-  connect(m_stopButton, &QPushButton::clicked, [this]() {
+  QObject::connect(m_stopButton, &QPushButton::clicked, [this]() {
     setPosition(QTime(0, 0));
     if (m_videoStatus == VideoStatus::PLAYING)
     {
@@ -139,7 +139,7 @@ bool Player::connectPauseButton()
     return false;
   }
 
-  connect(m_pauseButton, &QPushButton::clicked, [this]() {
+  QObject::connect(m_pauseButton, &QPushButton::clicked, [this]() {
     if (m_videoStatus == VideoStatus::PLAYING)
     {
       m_pipeline->setState(QGst::StatePaused);
@@ -163,12 +163,7 @@ bool Player::connectPreviewButton()
     return false;
   }
 
-  connect(m_previewButton, &QPushButton::clicked, [this]() {
-    QTime currentPos = position();
-    int newPositionInMilliseconds = std::max(currentPos.msecsSinceStartOfDay() - 10000, 0);
-    QTime newPosition = QTime(0, 0).addMSecs(newPositionInMilliseconds);
-    setPosition(newPosition);
-  });
+  connect(m_previewButton, &QPushButton::clicked, [this]() { preview(); });
 
   return true;
 }
@@ -181,13 +176,7 @@ bool Player::connectNextButton()
     return false;
   }
 
-  connect(m_nextButton, &QPushButton::clicked, [this]() {
-    QTime currentPos = position();
-    int newPositionInMilliseconds =
-        std::min(currentPos.msecsSinceStartOfDay() + 10000, length().msecsSinceStartOfDay());
-    QTime newPosition = QTime(0, 0).addMSecs(newPositionInMilliseconds);
-    setPosition(newPosition);
-  });
+  connect(m_nextButton, &QPushButton::clicked, [this]() { next(); });
 
   return true;
 }
@@ -200,6 +189,22 @@ void Player::fastConnect()
   connectPauseButton();
   connectPreviewButton();
   connectNextButton();
+}
+
+void Player::preview()
+{
+  QTime currentPos = position();
+  int newPositionInMilliseconds = std::max(currentPos.msecsSinceStartOfDay() - 10000, 0);
+  QTime newPosition = QTime(0, 0).addMSecs(newPositionInMilliseconds);
+  setPosition(newPosition);
+}
+
+void Player::next()
+{
+  QTime currentPos = position();
+  int newPositionInMilliseconds = std::min(currentPos.msecsSinceStartOfDay() + 10000, length().msecsSinceStartOfDay());
+  QTime newPosition = QTime(0, 0).addMSecs(newPositionInMilliseconds);
+  setPosition(newPosition);
 }
 
 QTime Player::position() const

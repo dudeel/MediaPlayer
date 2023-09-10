@@ -1,9 +1,15 @@
 #include <QMainWindow>
 
+#include <QUrl>
+
 #include <QGst/Pipeline>
+#include <QGst/Ui/VideoWidget>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/dnn/dnn.hpp>
+
+#include "sound/sound.h"
+#include "player/player.h"
 
 namespace Ui
 {
@@ -21,6 +27,7 @@ public:
 private:
   Ui::MediaPlayerWindow* ui;
   QGst::PipelinePtr pipeline;
+  QGst::Ui::VideoWidget* video_widget;
 
   cv::dnn::Net net;
   bool m_yolo_enabled;
@@ -33,4 +40,5 @@ private:
   QGst::SamplePtr onNewSample(QGst::ElementPtr app_sink);
   void waitForStateChanged(QGst::State state, int timeout_ms);
   void initAddons();
+  void showVideo(const QUrl& videoUrl);
 };

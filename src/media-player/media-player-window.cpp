@@ -3,40 +3,79 @@
 
 #include <fstream>
 
-#include <QUrl>
 #include <QTimer>
+#include <QFileDialog>
+#include <QSpacerItem>
 
 #include <QGst/Init>
 #include <QGst/Parse>
 #include <QGst/ElementFactory>
+#include <QScopedPointer>
 
-#include "sound/sound.h"
-#include "player/player.h"
-
-MediaPlayerWindow::MediaPlayerWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MediaPlayerWindow)
+MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
+  : QMainWindow(parent), ui(new Ui::MediaPlayerWindow), video_widget(nullptr)
 {
   ui->setupUi(this);
   setWindowTitle("Media Player");
 
-  QGst::init(nullptr, nullptr);
+  QObject::connect(ui->openFile, &QAction::triggered, this, [this]() {
+    QString filter = tr("Формат (*.mp4 *.avi *.mkv)");
+    QString selected_filter;
 
-  pipeline = QGst::Parse::launch("playbin").dynamicCast<QGst::Pipeline>();
-  if (!pipeline)
+    QFileDialog fileDialog(this);
+    fileDialog.setWindowTitle(tr("Выберите видео"));
+    fileDialog.setNameFilter(filter);
+    fileDialog.setDirectory("/home/user/project/MediaPlayer/data/");
+
+    if (fileDialog.exec())
+    {
+      QString selectedFile = fileDialog.selectedFiles().first();
+      showVideo(QUrl::fromLocalFile(selectedFile));
+    }
+  });
+
+  QObject::connect(ui->exit, &QAction::triggered, this, [this]() { this->close(); });
+
+  QObject::connect(ui->timePreview, &QAction::triggered, this, [this]() {});
+  QObject::connect(ui->timeNext, &QAction::triggered, this, [this]() {});
+  QObject::connect(ui->playVideo, &QAction::triggered, this, [this]() {});
+  QObject::connect(ui->stopVideo, &QAction::triggered, this, [this]() {});
+
+  QObject::connect(ui->addVolume, &QAction::triggered, this, [this]() {});
+  QObject::connect(ui->removeVolume, &QAction::triggered, this, [this]() {});
+  QObject::connect(ui->enableVolume, &QAction::triggered, this, [this]() {});
+}
+
+void MediaPlayerWindow::showVideo(const QUrl& videoUrl)
+{
+  if (pipeline)
   {
-    qCritical() << "Не удалось создать QGst::PipelinePtr";
-    return;
+    pipeline->setState(QGst::StateNull);
+  }
+  else
+  {
+    QGst::init(nullptr, nullptr);
+
+    pipeline = QGst::Parse::launch("playbin").dynamicCast<QGst::Pipeline>();
+    if (!pipeline)
+    {
+      qCritical() << "Не удалось создать QGst::PipelinePtr";
+      return;
+    }
+
+    ui->openFile->setEnabled(false);
+    if (!video_widget)
+    {
+      video_widget = new QGst::Ui::VideoWidget;
+      ui->mediaBox->addWidget(video_widget);
+      QGst::ElementPtr video_sink = QGst::ElementFactory::make("qwidget5videosink", "video_sink");
+      video_widget->setVideoSink(video_sink);
+      pipeline->setProperty("video-sink", video_sink);
+    }
   }
 
-  QGst::Ui::VideoWidget* video_widget = new QGst::Ui::VideoWidget;
-  ui->mediaBox->addWidget(video_widget);
-
-  QUrl videoUrl = QUrl::fromLocalFile("/home/user/project/MediaPlayer/data/Monkey.mp4");
   pipeline->setProperty("uri", videoUrl.toString());
-  pipeline->setProperty("video-sink", QGst::ElementFactory::make("qwidget5videosink", "video_sink"));
   pipeline->setState(QGst::StatePlaying);
-
-  QGst::ElementPtr video_sink = pipeline->property("video-sink").get<QGst::ElementPtr>();
-  video_widget->setVideoSink(video_sink);
 
   QTimer::singleShot(0, this, [this]() {
     waitForStateChanged(QGst::StatePlaying, 5000);
@@ -117,13 +156,6 @@ void MediaPlayerWindow::initAddons()
   }
 }
 
-MediaPlayerWindow::~MediaPlayerWindow()
-{
-  pipeline->setState(QGst::StateNull);
-
-  delete ui;
-}
-
 void MediaPlayerWindow::postprocess(cv::Mat& frame, const std::vector<cv::Mat>& output, float threshold_confidence,
                                     const std::vector<std::string>& classes)
 {
@@ -180,4 +212,10 @@ void MediaPlayerWindow::postprocess(cv::Mat& frame, const std::vector<cv::Mat>& 
     cv::putText(frame, labelText, box.tl(), cv::FONT_HERSHEY_SIMPLEX, 0.6, color, 2);
     cv::rectangle(frame, box, color, 2);
   }
+}
+
+MediaPlayerWindow::~MediaPlayerWindow()
+{
+  pipeline->setState(QGst::StateNull);
+  delete ui;
 }

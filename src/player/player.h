@@ -80,4 +80,8 @@ public:
   bool connectNextButton();
 
   void fastConnect();
+
+public:
+  void preview();
+  void next();
 };

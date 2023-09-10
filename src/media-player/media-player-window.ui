@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>675</width>
-    <height>555</height>
+    <width>406</width>
+    <height>394</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,12 +20,41 @@
      <height>350</height>
     </size>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="10,0,1">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetMinAndMaxSize</enum>
+    </property>
     <item>
-     <layout class="QVBoxLayout" name="mediaBox"/>
+     <layout class="QVBoxLayout" name="mediaBox" stretch="">
+      <property name="spacing">
+       <number>100</number>
+      </property>
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMaximumSize</enum>
+      </property>
+     </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>1</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0">
+      <property name="spacing">
+       <number>1</number>
+      </property>
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMinimumSize</enum>
+      </property>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <property name="sizeConstraint">
@@ -237,13 +266,13 @@
            <widget class="QLabel" name="volumeLabel">
             <property name="minimumSize">
              <size>
-              <width>32</width>
+              <width>40</width>
               <height>32</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>32</width>
+              <width>40</width>
               <height>32</height>
              </size>
             </property>
@@ -268,150 +297,150 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>675</width>
+     <width>406</width>
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="fileMenu">
     <property name="title">
      <string>Файл</string>
     </property>
-    <widget class="QMenu" name="menu_5">
+    <widget class="QMenu" name="convertMenu">
      <property name="title">
       <string>Конвертировать</string>
      </property>
-     <addaction name="actionmp4"/>
-     <addaction name="actionAVI"/>
-     <addaction name="actionWebP"/>
-     <addaction name="actionMKV"/>
+     <addaction name="mp4"/>
+     <addaction name="avi"/>
+     <addaction name="webp"/>
+     <addaction name="mkv"/>
     </widget>
-    <addaction name="action"/>
+    <addaction name="openFile"/>
     <addaction name="separator"/>
-    <addaction name="menu_5"/>
+    <addaction name="convertMenu"/>
     <addaction name="separator"/>
-    <addaction name="action_2"/>
+    <addaction name="exit"/>
    </widget>
-   <widget class="QMenu" name="menu_2">
+   <widget class="QMenu" name="playMenu">
     <property name="title">
      <string>Воспроизведение</string>
     </property>
-    <widget class="QMenu" name="menu_3">
+    <widget class="QMenu" name="speedMenu">
      <property name="title">
       <string>Скорость</string>
      </property>
-     <addaction name="action0_2x"/>
-     <addaction name="action0_5x"/>
-     <addaction name="action1x"/>
-     <addaction name="actionx1_25"/>
-     <addaction name="actionx2_00"/>
+     <addaction name="x02"/>
+     <addaction name="x05"/>
+     <addaction name="x10"/>
+     <addaction name="x15"/>
+     <addaction name="x20"/>
     </widget>
-    <addaction name="menu_3"/>
+    <addaction name="speedMenu"/>
     <addaction name="separator"/>
-    <addaction name="action_5"/>
-    <addaction name="action_4"/>
+    <addaction name="timePreview"/>
+    <addaction name="timeNext"/>
     <addaction name="separator"/>
-    <addaction name="action_8"/>
-    <addaction name="action_9"/>
+    <addaction name="playVideo"/>
+    <addaction name="stopVideo"/>
    </widget>
-   <widget class="QMenu" name="menu_4">
+   <widget class="QMenu" name="audioMenu">
     <property name="title">
      <string>Аудио</string>
     </property>
-    <addaction name="action_10"/>
-    <addaction name="action_11"/>
-    <addaction name="action_12"/>
+    <addaction name="addVolume"/>
+    <addaction name="removeVolume"/>
+    <addaction name="enableVolume"/>
    </widget>
-   <addaction name="menu"/>
-   <addaction name="menu_2"/>
-   <addaction name="menu_4"/>
+   <addaction name="fileMenu"/>
+   <addaction name="playMenu"/>
+   <addaction name="audioMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action">
+  <action name="openFile">
    <property name="text">
     <string> Открыть файл...</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="exit">
    <property name="text">
     <string>Выход</string>
    </property>
   </action>
-  <action name="action0_2x">
+  <action name="x02">
    <property name="text">
     <string>0.25x</string>
    </property>
   </action>
-  <action name="action0_5x">
+  <action name="x05">
    <property name="text">
     <string>0.50x</string>
    </property>
   </action>
-  <action name="action1x">
+  <action name="x10">
    <property name="text">
     <string>x1.00 (обычное)</string>
    </property>
   </action>
-  <action name="actionx1_25">
+  <action name="x15">
    <property name="text">
     <string>x1.50</string>
    </property>
   </action>
-  <action name="actionx2_00">
+  <action name="x20">
    <property name="text">
     <string>x2.00</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="timeNext">
    <property name="text">
     <string>Скачек вперёд</string>
    </property>
   </action>
-  <action name="action_5">
+  <action name="timePreview">
    <property name="text">
     <string>Скачек назад</string>
    </property>
   </action>
-  <action name="action_8">
+  <action name="playVideo">
    <property name="text">
     <string>Воспроизвести</string>
    </property>
   </action>
-  <action name="action_9">
+  <action name="stopVideo">
    <property name="text">
     <string>Стоп</string>
    </property>
   </action>
-  <action name="action_10">
+  <action name="addVolume">
    <property name="text">
     <string>Увеличить громкость</string>
    </property>
   </action>
-  <action name="action_11">
+  <action name="removeVolume">
    <property name="text">
     <string>Уменьшить громкость</string>
    </property>
   </action>
-  <action name="action_12">
+  <action name="enableVolume">
    <property name="text">
     <string>Выключить звук</string>
    </property>
   </action>
-  <action name="actionmp4">
+  <action name="mp4">
    <property name="text">
     <string>MP4</string>
    </property>
   </action>
-  <action name="actionAVI">
+  <action name="avi">
    <property name="text">
     <string>AVI</string>
    </property>
   </action>
-  <action name="actionWebP">
+  <action name="webp">
    <property name="text">
     <string>WebP</string>
    </property>
   </action>
-  <action name="actionMKV">
+  <action name="mkv">
    <property name="text">
     <string>MKV</string>
    </property>
