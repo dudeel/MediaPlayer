@@ -7,10 +7,13 @@
 #include <QFileDialog>
 #include <QSpacerItem>
 
+#include <QDebug>
+#include <QGst/ElementFactory>
 #include <QGst/Init>
 #include <QGst/Parse>
-#include <QGst/ElementFactory>
 #include <QScopedPointer>
+
+#include "convertation/convertation.h"
 
 MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
   : QMainWindow(parent), ui(new Ui::MediaPlayerWindow), video_widget(nullptr)
@@ -18,9 +21,8 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
   ui->setupUi(this);
   setWindowTitle("Media Player");
 
-  QObject::connect(ui->openFile, &QAction::triggered, [this]() {
-    QString filter = tr("Формат (*.mp4 *.avi *.mkv)");
-    QString selected_filter;
+  QObject::connect(ui->openFile, &QAction::triggered, this, [this]() {
+    QString filter = tr("Формат (*.mp4 *.avi *.webm)");
 
     QFileDialog fileDialog(this);
     fileDialog.setWindowTitle(tr("Выберите видео"));
@@ -29,12 +31,16 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
 
     if (fileDialog.exec())
     {
-      QString selectedFile = fileDialog.selectedFiles().first();
-      showVideo(QUrl::fromLocalFile(selectedFile));
+      QStringList selectedFilesList = fileDialog.selectedFiles();
+      if (!selectedFilesList.isEmpty())
+      {
+        QString selectedFile = selectedFilesList.first();
+        showVideo(QUrl::fromLocalFile(selectedFile));
+      }
     }
   });
 
-  QObject::connect(ui->exit, &QAction::triggered, [this]() { close(); });
+  QObject::connect(ui->exit, &QAction::triggered, this, [this]() { close(); });
 }
 
 void MediaPlayerWindow::showVideo(const QUrl& videoUrl)
@@ -48,6 +54,7 @@ void MediaPlayerWindow::showVideo(const QUrl& videoUrl)
     QGst::init(nullptr, nullptr);
 
     pipeline = QGst::Parse::launch("playbin").dynamicCast<QGst::Pipeline>();
+
     if (!pipeline)
     {
       qCritical() << "Не удалось создать QGst::PipelinePtr";
@@ -80,7 +87,7 @@ void MediaPlayerWindow::waitForStateChanged(QGst::State state, int timeout_ms)
   QTimer timer;
   timer.start(timeout_ms);
 
-  QObject::connect(&timer, &QTimer::timeout, [&loop]() { loop.quit(); });
+  QObject::connect(&timer, &QTimer::timeout, &loop, [&loop]() { loop.quit(); });
 
   while (pipeline->currentState() != state && timer.isActive())
   {
@@ -93,65 +100,82 @@ void MediaPlayerWindow::initAddons()
 {
   Sound* sound = new Sound(pipeline, ui->volumeSlider, ui->muteButton, ui->volumeLabel);
   sound->fastConnect();
-  QObject::connect(ui->addVolume, &QAction::triggered, [sound]() { sound->addVolume(); });
-  QObject::connect(ui->removeVolume, &QAction::triggered, [sound]() { sound->removeVolume(); });
-  QObject::connect(ui->enableVolume, &QAction::triggered, [sound]() { sound->mute(); });
+  QObject::connect(ui->addVolume, &QAction::triggered, sound, [sound]() { sound->addVolume(); });
+  QObject::connect(ui->removeVolume, &QAction::triggered, sound, [sound]() { sound->removeVolume(); });
+  QObject::connect(ui->enableVolume, &QAction::triggered, sound, [sound]() { sound->mute(); });
 
   Player* player = new Player(pipeline, ui->timeSlider, ui->currentTimeText, ui->maxTimeText, ui->stopButton,
                               ui->pauseButton, ui->previewButton, ui->nextButton, this);
   player->fastConnect();
-  QObject::connect(ui->timePreview, &QAction::triggered, [player]() { player->preview(); });
-  QObject::connect(ui->timeNext, &QAction::triggered, [player]() { player->next(); });
-  QObject::connect(ui->playVideo, &QAction::triggered, [player]() { player->pause(); });
-  QObject::connect(ui->stopVideo, &QAction::triggered, [player]() { player->stop(); });
+  QObject::connect(ui->timePreview, &QAction::triggered, player, [player]() { player->preview(); });
+  QObject::connect(ui->timeNext, &QAction::triggered, player, [player]() { player->next(); });
+  QObject::connect(ui->playVideo, &QAction::triggered, player, [player]() { player->pause(); });
+  QObject::connect(ui->stopVideo, &QAction::triggered, player, [player]() { player->stop(); });
 
-  // Подключение нейросети YOLOv3
-  m_yolo_enabled = false;
-  if (m_yolo_enabled)
+  Convertation* convertation = new Convertation();
+  QString sourceFile = "/home/user/project/MediaPlayer/data/Monkey1.mp4";
+  QString outputFile = "/home/user/project/MediaPlayer/data/Monkey3";
+  bool audio = true;
+
+  QObject::connect(ui->mp4, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
+    convertation->convertVideo(sourceFile, outputFile, Convertation::OutputFormat::MP4, audio);
+  });
+
+  QObject::connect(ui->avi, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
+    convertation->convertVideo(sourceFile, outputFile, Convertation::OutputFormat::AVI, audio);
+  });
+
+  QObject::connect(ui->webm, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
+    convertation->convertVideo(sourceFile, outputFile, Convertation::OutputFormat::WebM, audio);
+  });
+}
+
+void MediaPlayerWindow::yolov3()
+{
+  if (!m_yolo_enabled)
+    return;
+  // Загрузка YOLOv3
+  const std::string model_config = "/home/user/project/MediaPlayer/libs/yolov3.cfg";
+  const std::string model_weights = "/home/user/project/MediaPlayer/libs/yolov3.weights";
+  const std::string model_classes = "/home/user/project/MediaPlayer/libs/coco.names";
+
+  net = cv::dnn::readNetFromDarknet(model_config, model_weights);
+  net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
+  net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+
+  // Загрузка имен классов
+  std::ifstream classNames(model_classes);
+  if (classNames.is_open())
   {
-    // Загрузка YOLOv3
-    const std::string model_config = "/home/user/project/MediaPlayer/libs/yolov3.cfg";
-    const std::string model_weights = "/home/user/project/MediaPlayer/libs/yolov3.weights";
-    const std::string model_classes = "/home/user/project/MediaPlayer/libs/coco.names";
-
-    net = cv::dnn::readNetFromDarknet(model_config, model_weights);
-    net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
-    net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
-
-    // Загрузка имен классов
-    std::ifstream classNames(model_classes);
-    if (classNames.is_open())
+    std::string className = "";
+    while (std::getline(classNames, className))
     {
-      std::string className = "";
-      while (std::getline(classNames, className))
-      {
-        classes.push_back(className);
-      }
+      classes.push_back(className);
     }
-    else
-    {
-      qCritical() << "Не удалось открыть файл с именами классов";
-    }
-
-    // Подготовка
-    cv::Mat img = cv::imread("/путь/к/изображению.jpg");
-    cv::Mat blob;
-    cv::dnn::blobFromImage(img, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
-    net.setInput(blob);
-
-    // Прогнозирование
-    std::vector<std::string> outputBlobNames = net.getUnconnectedOutLayersNames();
-    std::vector<cv::Mat> outputBlobs;
-    net.forward(outputBlobs, outputBlobNames);
-
-    float threshold_confidence = 0.5;
-    postprocess(img, outputBlobs, threshold_confidence, classes);
-
-    // Отображение результата
-    cv::namedWindow("MediaPlayer", cv::WINDOW_NORMAL);
-    cv::imshow("MediaPlayer", img);
-    cv::waitKey(0);
   }
+  else
+  {
+    qCritical() << "Не удалось открыть файл с именами классов";
+  }
+
+  // Подготовка
+  cv::Mat img = cv::imread("/путь/к/изображению.jpg");
+  cv::Mat blob;
+  cv::dnn::blobFromImage(img, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
+  net.setInput(blob);
+
+  // Прогнозирование
+  std::vector<std::string> outputBlobNames = net.getUnconnectedOutLayersNames();
+  std::vector<cv::Mat> outputBlobs;
+  net.forward(outputBlobs, outputBlobNames);
+
+  float threshold_confidence = 0.5;
+  postprocess(img, outputBlobs, threshold_confidence, classes);
+
+  // Отображение результата
+  cv::namedWindow("MediaPlayer", cv::WINDOW_NORMAL);
+  cv::imshow("MediaPlayer", img);
+  cv::waitKey(0);
 }
 
 void MediaPlayerWindow::postprocess(cv::Mat& frame, const std::vector<cv::Mat>& output, float threshold_confidence,

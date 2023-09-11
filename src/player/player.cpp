@@ -2,8 +2,12 @@
 
 #include <QGst/Query>
 #include <QGst/Event>
+#include <QGst/Structure>
+#include <QGst/Bus>
+#include <QGst/Message>
+#include <QDebug>
 
-Player::Player(QWidget* parent) : QGst::Ui::VideoWidget(parent)
+Player::Player(QWidget* parent) : QGst::Ui::VideoWidget(parent, Qt::WindowFlags())
 {
   Q_UNUSED(parent);
 }
@@ -73,9 +77,9 @@ bool Player::connectVideoSlider()
     qInfo() << "Вы не передали в конструктор класса QLabel, отображение общего времени видео отключено";
   }
 
-  QObject::connect(m_timeSlider, &QSlider::sliderPressed, [this]() { m_sliderStatus = SliderStatus::PRESSED; });
+  QObject::connect(m_timeSlider, &QSlider::sliderPressed, this, [=]() { m_sliderStatus = SliderStatus::PRESSED; });
 
-  QObject::connect(m_timeSlider, &QSlider::sliderReleased, [this]() {
+  QObject::connect(m_timeSlider, &QSlider::sliderReleased, this, [=]() {
     m_sliderStatus = SliderStatus::UNPRESSED;
 
     double value = m_timeSlider->value();
@@ -85,11 +89,11 @@ bool Player::connectVideoSlider()
     {
       QTime pos(0, 0);
       pos = pos.addMSecs(static_cast<int>((value / static_cast<double>(duration)) * duration));
-      this->setPosition(pos);
+      setPosition(pos);
     }
   });
 
-  QObject::connect(m_timeSlider, &QSlider::valueChanged, [this]() {
+  QObject::connect(m_timeSlider, &QSlider::valueChanged, this, [=]() {
     if (m_sliderStatus == SliderStatus::PRESSED)
     {
       double value = m_timeSlider->value();
@@ -119,7 +123,7 @@ bool Player::connectStopButton()
     return false;
   }
 
-  QObject::connect(m_stopButton, &QPushButton::clicked, [this]() { stop(); });
+  QObject::connect(m_stopButton, &QPushButton::clicked, this, &Player::stop);
 
   return true;
 }
@@ -132,7 +136,7 @@ bool Player::connectPauseButton()
     return false;
   }
 
-  QObject::connect(m_pauseButton, &QPushButton::clicked, [this]() { pause(); });
+  QObject::connect(m_pauseButton, &QPushButton::clicked, this, &Player::pause);
 
   return true;
 }
@@ -168,7 +172,7 @@ bool Player::connectPreviewButton()
     return false;
   }
 
-  connect(m_previewButton, &QPushButton::clicked, [this]() { preview(); });
+  connect(m_previewButton, &QPushButton::clicked, this, &Player::preview);
 
   return true;
 }
@@ -181,7 +185,7 @@ bool Player::connectNextButton()
     return false;
   }
 
-  connect(m_nextButton, &QPushButton::clicked, [this]() { next(); });
+  connect(m_nextButton, &QPushButton::clicked, this, &Player::next);
 
   return true;
 }
@@ -255,5 +259,37 @@ Player::~Player()
   {
     m_pipeline->setState(QGst::StateNull);
     stopPipelineWatch();
+  }
+}
+
+void Player::setSpeed(qreal speed)
+{
+  qDebug() << "Метод setSpeed вызван.";
+
+  if (m_pipeline)
+  {
+    qDebug() << "Пайплайн существует.";
+    QGst::ElementPtr element = m_pipeline;
+
+    if (element.isNull())
+    {
+      qDebug() << "Element is null";
+      return;
+    }
+
+    if (speed >= 0.25 && speed <= 2.0)
+    {
+      qDebug() << speed;
+      element->setProperty("speed", speed);
+    }
+    else
+    {
+      qWarning() << "Некорректное значение скорости воспроизведения. Допустимый диапазон: 0.25 - 2.0";
+      return;
+    }
+  }
+  else
+  {
+    qWarning() << "Пайплайн не инициализирован.";
   }
 }

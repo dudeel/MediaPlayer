@@ -8,14 +8,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/modules)
 
-find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 find_package(Qt5GStreamer REQUIRED)
-find_package(OpenCV 4.8.0 REQUIRED)
+find_package(OpenCV REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -32,7 +32,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Widgets
     ${GST_LIBRARIES}
     ${GST_LIBRARY_DIRS}
-    ${Qt5GStreamer_LIBRARIES}
+    ${QtGStreamer_LIBRARIES}
     ${GSTREAMER_LIBRARIES}
     ${QTGSTREAMER_UI_LIBRARIES}
     ${OpenCV_LIBS}

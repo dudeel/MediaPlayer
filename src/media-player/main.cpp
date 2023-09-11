@@ -1,4 +1,5 @@
 #include <QApplication>
+
 #include "media-player-window.h"
 
 int main(int argc, char* argv[])
@@ -10,7 +11,3 @@ int main(int argc, char* argv[])
 
   return app.exec();
 }
-
-// MKV:  x264enc ! matroskamux
-// WebM: vp8enc ! webmmux
-// AVI:  x264enc ! avimux

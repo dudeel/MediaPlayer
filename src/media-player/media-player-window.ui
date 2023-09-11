@@ -25,7 +25,7 @@
      <enum>QLayout::SetMinAndMaxSize</enum>
     </property>
     <item>
-     <layout class="QVBoxLayout" name="mediaBox" stretch="">
+     <layout class="QVBoxLayout" name="mediaBox">
       <property name="spacing">
        <number>100</number>
       </property>
@@ -311,8 +311,7 @@
      </property>
      <addaction name="mp4"/>
      <addaction name="avi"/>
-     <addaction name="webp"/>
-     <addaction name="mkv"/>
+     <addaction name="webm"/>
     </widget>
     <addaction name="openFile"/>
     <addaction name="separator"/>
@@ -324,17 +323,6 @@
     <property name="title">
      <string>Воспроизведение</string>
     </property>
-    <widget class="QMenu" name="speedMenu">
-     <property name="title">
-      <string>Скорость</string>
-     </property>
-     <addaction name="x02"/>
-     <addaction name="x05"/>
-     <addaction name="x10"/>
-     <addaction name="x15"/>
-     <addaction name="x20"/>
-    </widget>
-    <addaction name="speedMenu"/>
     <addaction name="separator"/>
     <addaction name="timePreview"/>
     <addaction name="timeNext"/>
@@ -435,9 +423,9 @@
     <string>AVI</string>
    </property>
   </action>
-  <action name="webp">
+  <action name="webm">
    <property name="text">
-    <string>WebP</string>
+    <string>WebM</string>
    </property>
   </action>
   <action name="mkv">
