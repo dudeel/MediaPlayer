@@ -314,6 +314,7 @@
      <addaction name="webm"/>
     </widget>
     <addaction name="openFile"/>
+    <addaction name="actionYOLOv3"/>
     <addaction name="separator"/>
     <addaction name="convertMenu"/>
     <addaction name="separator"/>
@@ -431,6 +432,14 @@
   <action name="mkv">
    <property name="text">
     <string>MKV</string>
+   </property>
+  </action>
+  <action name="actionYOLOv3">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>YOLOv3</string>
    </property>
   </action>
  </widget>

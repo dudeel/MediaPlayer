@@ -11,6 +11,8 @@
 #include "sound/sound.h"
 #include "player/player.h"
 
+class QCloseEvent;
+
 namespace Ui
 {
 class MediaPlayerWindow;
@@ -42,4 +44,6 @@ private:
   void waitForStateChanged(QGst::State state, int timeout_ms);
   void initAddons();
   void showVideo(const QUrl& videoUrl);
+  QLabel* videoLabel;
+  void closeEvent(QCloseEvent* event);
 };

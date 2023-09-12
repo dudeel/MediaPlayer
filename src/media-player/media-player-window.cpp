@@ -12,6 +12,7 @@
 #include <QGst/Init>
 #include <QGst/Parse>
 #include <QScopedPointer>
+#include <QCloseEvent>
 
 #include "convertation/convertation.h"
 
@@ -29,6 +30,11 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
     fileDialog.setNameFilter(filter);
     fileDialog.setDirectory("/home/user/project/MediaPlayer/data/");
 
+    if (ui->actionYOLOv3->isChecked())
+      m_yolo_enabled = true;
+    else
+      m_yolo_enabled = false;
+
     if (fileDialog.exec())
     {
       QStringList selectedFilesList = fileDialog.selectedFiles();
@@ -41,8 +47,18 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
           qCritical() << "Не удалось открыть видео файл";
           return;
         }
-        m_yolo_enabled = true;
-        yolov3(videoStream);
+
+        if (m_yolo_enabled)
+        {
+          videoLabel = new QLabel(this);
+          ui->mediaBox->addWidget(videoLabel);
+          yolov3(videoStream);
+        }
+        else
+        {
+          QUrl videoUrl = QUrl::fromLocalFile(selectedFile);
+          showVideo(videoUrl);
+        }
       }
     }
   });
@@ -166,6 +182,10 @@ void MediaPlayerWindow::yolov3(cv::VideoCapture& videoStream)
   cv::Mat frame;
   while (videoStream.read(frame))
   {
+    int width = videoLabel->width();
+    int height = videoLabel->height();
+    cv::resize(frame, frame, cv::Size(width, height));
+
     cv::Mat blob;
     cv::dnn::blobFromImage(frame, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
     net.setInput(blob);
@@ -174,12 +194,13 @@ void MediaPlayerWindow::yolov3(cv::VideoCapture& videoStream)
     std::vector<cv::Mat> outputBlobs;
     net.forward(outputBlobs, outputBlobNames);
 
-    float threshold_confidence = 0.5;
+    float threshold_confidence = 0.35;
     postprocess(frame, outputBlobs, threshold_confidence, classes);
 
-    cv::imshow("MediaPlayer", frame);
+    QImage img(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
+    videoLabel->setPixmap(QPixmap::fromImage(img));
     if (cv::waitKey(1) >= 0)
-      break;  // Break the loop if a key is pressed
+      break;
   }
 }
 
@@ -239,6 +260,12 @@ void MediaPlayerWindow::postprocess(cv::Mat& frame, const std::vector<cv::Mat>& 
     cv::putText(frame, labelText, box.tl(), cv::FONT_HERSHEY_SIMPLEX, 0.6, color, 2);
     cv::rectangle(frame, box, color, 2);
   }
+}
+
+void MediaPlayerWindow::closeEvent(QCloseEvent* event)
+{
+  pipeline->setState(QGst::StateNull);
+  event->accept();
 }
 
 MediaPlayerWindow::~MediaPlayerWindow()
