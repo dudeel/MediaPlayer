@@ -35,7 +35,14 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
       if (!selectedFilesList.isEmpty())
       {
         QString selectedFile = selectedFilesList.first();
-        showVideo(QUrl::fromLocalFile(selectedFile));
+        cv::VideoCapture videoStream(selectedFile.toStdString());
+        if (!videoStream.isOpened())
+        {
+          qCritical() << "Не удалось открыть видео файл";
+          return;
+        }
+        m_yolo_enabled = true;
+        yolov3(videoStream);
       }
     }
   });
@@ -142,7 +149,6 @@ void MediaPlayerWindow::yolov3(cv::VideoCapture& videoStream)
   net = cv::dnn::readNetFromDarknet(model_config, model_weights);
   net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
   net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
-
   std::ifstream classNames(model_classes);
   if (classNames.is_open())
   {
