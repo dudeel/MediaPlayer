@@ -1,12 +1,4 @@
 [Bb]uild/
 
-[Ll]ibs/darknet
-[Ll]ibs/opencv
-[Ll]ibs/qt-gstreamer
-
-[Ll]ibs/coco.names
-[Ll]ibs/yolov3.cfg
-[Ll]ibs/yolov3.weights
-
 *.user
 .clang-format
