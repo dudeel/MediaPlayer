@@ -158,6 +158,9 @@ void MediaPlayerWindow::yolov3(cv::VideoCapture& videoStream)
   if (!m_yolo_enabled)
     return;
 
+  int total_frames = static_cast<int>(videoStream.get(cv::CAP_PROP_FRAME_COUNT));
+  ui->timeSlider->setMaximum(total_frames - 1);
+
   const std::string model_config = "/home/user/project/MediaPlayer/libs/yolov3.cfg";
   const std::string model_weights = "/home/user/project/MediaPlayer/libs/yolov3.weights";
   const std::string model_classes = "/home/user/project/MediaPlayer/libs/coco.names";
@@ -180,6 +183,7 @@ void MediaPlayerWindow::yolov3(cv::VideoCapture& videoStream)
   }
 
   cv::Mat frame;
+  int frame_count = 0;
   while (videoStream.read(frame))
   {
     int width = videoLabel->width();
@@ -189,6 +193,9 @@ void MediaPlayerWindow::yolov3(cv::VideoCapture& videoStream)
     cv::Mat blob;
     cv::dnn::blobFromImage(frame, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
     net.setInput(blob);
+
+    ui->timeSlider->setValue(frame_count);
+    frame_count++;
 
     std::vector<std::string> outputBlobNames = net.getUnconnectedOutLayersNames();
     std::vector<cv::Mat> outputBlobs;
