@@ -113,20 +113,20 @@ void MediaPlayerWindow::initAddons()
   QObject::connect(ui->stopVideo, &QAction::triggered, player, [player]() { player->stop(); });
 
   Convertation* convertation = new Convertation();
-  QString sourceFile = "/home/user/project/MediaPlayer/data/Monkey1.mp4";
-  QString outputFile = "/home/user/project/MediaPlayer/data/Monkey3";
+  QString sourceFile = "/home/user/project/MediaPlayer/data/test.mp4";
+  QString outputFile = "/home/user/project/MediaPlayer/data/result/Monkey";
   bool audio = true;
 
   QObject::connect(ui->mp4, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
-    convertation->convertVideo(sourceFile, outputFile, Convertation::OutputFormat::MP4, audio);
+    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::MP4, audio);
   });
 
   QObject::connect(ui->avi, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
-    convertation->convertVideo(sourceFile, outputFile, Convertation::OutputFormat::AVI, audio);
+    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::AVI, audio);
   });
 
   QObject::connect(ui->webm, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
-    convertation->convertVideo(sourceFile, outputFile, Convertation::OutputFormat::WebM, audio);
+    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::WebM, audio);
   });
 }
 

@@ -1,12 +1,14 @@
 #pragma once
 
 #include <QObject>
+#include <QThread>
+#include <QtConcurrent/QtConcurrent>
 
 class Convertation : public QObject
 {
   Q_OBJECT
 public:
-  explicit Convertation(QObject* parent = nullptr);
+  Convertation();
 
 public:
   enum class OutputFormat
@@ -18,10 +20,22 @@ public:
   };
 
 public:
-  void convertVideo(const QString& sourceFile, const QString& outputFile, Convertation::OutputFormat outputFormat,
-                    bool includeAudio);
+  void startConvertation(const QString& sourceFile, const QString& outputFile, OutputFormat outputFormat,
+                         bool includeAudio);
 
 private:
-  Convertation::OutputFormat getOutputFormatFromExtension(const QString& extension);
+  void convertVideo(const QString& sourceFile, const QString& outputFile, OutputFormat outputFormat, bool includeAudio);
+
+private:
+  OutputFormat getOutputFormatFromExtension(const QString& extension);
   QString outputFormatToString(OutputFormat format);
+  QString convertBytes(qint64 bytes);
+
+private:
+  QThread convertThread;
+  bool conversionRunning = false;
+
+Q_SIGNALS:
+  void conversionFinished();
+  void conversionProgress(int progress);
 };

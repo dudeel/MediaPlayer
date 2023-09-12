@@ -25,4 +25,5 @@ add_executable(${PROJECT_NAME}
 #	${SAVELOADSETTINGS_SRC_FILES}
         ${CONVERTATION_SRC_FILES}
         convertation/convertation.h convertation/convertation.cpp
+        convertation/convertation-window.h convertation/convertation-window.cpp convertation/convertation-window.ui
 )

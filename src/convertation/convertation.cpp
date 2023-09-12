@@ -4,9 +4,17 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QString>
+#include <QTime>
+#include <QtConcurrent/QtConcurrent>
 
-Convertation::Convertation(QObject* parent) : QObject{ parent }
+const QString GST_PIPELINE_TEMPLATE =
+    "gst-launch-1.0 filesrc location=%1 ! decodebin name=demux demux. ! "
+    "videoconvert ! x264enc ! %2mux name=mux %3";
+
+Convertation::Convertation() : QObject(nullptr)
 {
+  this->moveToThread(&convertThread);
+  convertThread.start();
 }
 
 Convertation::OutputFormat Convertation::getOutputFormatFromExtension(const QString& extension)
@@ -40,24 +48,20 @@ void Convertation::convertVideo(const QString& sourceFile, const QString& output
 {
   QString outputFormatStr = outputFormatToString(outputFormat);
 
-  QString pipeline = QString(
-                         "gst-launch-1.0 filesrc location=%1 ! decodebin name=demux demux. ! "
-                         "videoconvert ! x264enc ! %2mux name=mux ")
-                         .arg(sourceFile, outputFormatStr);
+  QString finalOutputFile = QString("%1.%2").arg(outputFile, outputFormatStr);
 
-  if (outputFormat != OutputFormat::Unsupported)
+  // Проверка наличия файла с таким же названием и форматом
+  if (QFile::exists(finalOutputFile))
   {
-    if (includeAudio)
-    {
-      pipeline +=
-          "demux. ! audioconvert ! audioresample ! audio/x-raw,rate=44100 ! voaacenc "
-          "! mux. ";
-    }
-    else
-    {
-      pipeline += "demux. ! fakesink ";
-    }
+    qDebug() << "Файл с таким же названием и форматом уже существует.";
+    return;
   }
+
+  QString audioPart = includeAudio ? "demux. ! audioconvert ! audioresample ! audio/x-raw,rate=44100 ! voaacenc ! "
+                                     "mux. " :
+                                     "demux. ! fakesink ";
+
+  QString pipeline = GST_PIPELINE_TEMPLATE.arg(sourceFile, outputFormatStr, audioPart);
 
   if (outputFormat == OutputFormat::WebM)
   {
@@ -67,9 +71,101 @@ void Convertation::convertVideo(const QString& sourceFile, const QString& output
 
   pipeline += QString("mux. ! filesink location=%1.%2").arg(outputFile, outputFormatStr);
 
-  qDebug() << "Pipeline:" << pipeline;
+  QFileInfo sourceInfo(sourceFile);
+  qint64 sourceSize = sourceInfo.size();
+  QTime startTime = QTime::currentTime();
+  QString progressInfo;
+  QProcess process;
+  process.setProcessChannelMode(QProcess::MergedChannels);
+  process.start(pipeline);
 
-  int result = system(pipeline.toStdString().c_str());
+  if (process.waitForStarted())
+  {
+    while (process.waitForReadyRead(-1))
+    {
+      progressInfo += QString::fromLocal8Bit(process.readAll());
 
-  qDebug() << "Conversion result:" << result;
+      QStringList progressMessages = progressInfo.split("\n", Qt::SkipEmptyParts);
+
+      for (const QString& message : progressMessages)
+      {
+        qDebug() << "Progress:" << message;
+      }
+    }
+
+    process.waitForFinished();
+  }
+  else
+  {
+    qDebug() << "Failed to start the process!";
+  }
+
+  QTime endTime = QTime::currentTime();
+  int duration = startTime.msecsTo(endTime);
+
+  // Конвертация размера в удобный формат
+  QString sourceSizeStr = convertBytes(sourceSize);
+  QString outputSizeStr = convertBytes(QFileInfo(outputFile + "." + outputFormatStr).size());
+
+  qDebug() << "Source file size:" << sourceSizeStr;
+  qDebug() << "Output file size:" << outputSizeStr;
+
+  // Конвертация времени в формат hh:mm:ss
+  QTime convertedDuration(0, 0);
+  convertedDuration = convertedDuration.addMSecs(duration);
+
+  qDebug() << "Time taken for conversion:" << convertedDuration.toString("hh:mm:ss");
+
+  conversionRunning = false;
+}
+
+QString Convertation::convertBytes(qint64 bytes)
+{
+  QString sizeString;
+  double size = static_cast<double>(bytes);
+
+  if (size < 1024)
+  {
+    sizeString = QString::number(size, 'f', 2) + " bytes";
+  }
+  else if (size < 1048576)
+  {
+    size = size / 1024;
+    sizeString = QString::number(size, 'f', 2) + " KB";
+  }
+  else if (size < 1073741824)
+  {
+    size = size / 1048576;
+    sizeString = QString::number(size, 'f', 2) + " MB";
+  }
+  else
+  {
+    size = size / 1073741824;
+    sizeString = QString::number(size, 'f', 2) + " GB";
+  }
+
+  return sizeString;
+}
+
+void Convertation::startConvertation(const QString& sourceFile, const QString& outputFile, OutputFormat outputFormat,
+                                     bool includeAudio)
+{
+  // Проверка на запущенную конвертацию
+  if (conversionRunning)
+  {
+    qDebug() << "Конвертация уже запущена.";
+    return;
+  }
+
+  conversionRunning = true;
+
+  // Создаем лямбда-функцию для запуска convertVideo внутри потока
+  auto converterLambda = [this, sourceFile, outputFile, outputFormat, includeAudio]() {
+    this->convertVideo(sourceFile, outputFile, outputFormat, includeAudio);
+    this->conversionFinished();
+    conversionRunning = false;
+  };
+
+  // Запускаем лямбда-функцию в отдельном потоке
+  QtConcurrent::run(converterLambda);
 }
