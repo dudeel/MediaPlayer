@@ -19,6 +19,7 @@ find_package(OpenCV REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+include_directories(${GSTREAMER_INCLUDE_DIRS})
 include_directories(${QTGSTREAMER_INCLUDES})
 add_definitions(${QTGSTREAMER_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${QTGSTREAMER_FLAGS}")
@@ -30,6 +31,7 @@ add_subdirectory(src)
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Core
     Qt5::Widgets
+    ${GSTREAMER_LIBRARIES}
     ${GST_LIBRARIES}
     ${GST_LIBRARY_DIRS}
     ${QtGStreamer_LIBRARIES}

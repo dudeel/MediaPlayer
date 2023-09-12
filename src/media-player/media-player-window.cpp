@@ -31,9 +31,13 @@ MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
     fileDialog.setDirectory("/home/user/project/MediaPlayer/data/");
 
     if (ui->actionYOLOv3->isChecked())
+    {
       m_yolo_enabled = true;
+    }
     else
+    {
       m_yolo_enabled = false;
+    }
 
     if (fileDialog.exec())
     {
@@ -157,6 +161,17 @@ void MediaPlayerWindow::yolov3(cv::VideoCapture& videoStream)
 {
   if (!m_yolo_enabled)
     return;
+
+  ui->volumeSlider->setVisible(false);
+  ui->muteButton->setVisible(false);
+  ui->volumeLabel->setVisible(false);
+  ui->menubar->setVisible(false);
+  ui->currentTimeText->setVisible(false);
+  ui->maxTimeText->setVisible(false);
+  ui->stopButton->setVisible(false);
+  ui->pauseButton->setVisible(false);
+  ui->previewButton->setVisible(false);
+  ui->nextButton->setVisible(false);
 
   int total_frames = static_cast<int>(videoStream.get(cv::CAP_PROP_FRAME_COUNT));
   ui->timeSlider->setMaximum(total_frames - 1);
