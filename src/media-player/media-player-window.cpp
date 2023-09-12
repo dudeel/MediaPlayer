@@ -14,6 +14,7 @@
 #include <QScopedPointer>
 
 #include "convertation/convertation.h"
+#include "convertation/convertation-window.h"
 
 MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
   : QMainWindow(parent), ui(new Ui::MediaPlayerWindow), video_widget(nullptr)
@@ -117,17 +118,27 @@ void MediaPlayerWindow::initAddons()
   QString outputFile = "/home/user/project/MediaPlayer/data/result/Monkey";
   bool audio = true;
 
-  QObject::connect(ui->mp4, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
-    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::MP4, audio);
-  });
+  ConvertationWindow* convertationWindow = new ConvertationWindow();
+  QObject::connect(ui->mp4, &QAction::triggered, convertation,
+                   [convertation, sourceFile, outputFile, audio, convertationWindow]() {
+                     convertationWindow->show();
+                     //    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::MP4,
+                     //    audio);
+                   });
 
-  QObject::connect(ui->avi, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
-    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::AVI, audio);
-  });
+  QObject::connect(ui->avi, &QAction::triggered, convertation,
+                   [convertation, sourceFile, outputFile, audio, convertationWindow]() {
+                     convertationWindow->show();
+                     //    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::AVI,
+                     //    audio);
+                   });
 
-  QObject::connect(ui->webm, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
-    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::WebM, audio);
-  });
+  QObject::connect(ui->webm, &QAction::triggered, convertation,
+                   [convertation, sourceFile, outputFile, audio, convertationWindow]() {
+                     convertationWindow->show();
+                     //    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::WebM,
+                     //    audio);
+                   });
 }
 
 void MediaPlayerWindow::yolov3()

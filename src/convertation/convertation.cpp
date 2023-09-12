@@ -150,7 +150,6 @@ QString Convertation::convertBytes(qint64 bytes)
 void Convertation::startConvertation(const QString& sourceFile, const QString& outputFile, OutputFormat outputFormat,
                                      bool includeAudio)
 {
-  // Проверка на запущенную конвертацию
   if (conversionRunning)
   {
     qDebug() << "Конвертация уже запущена.";
@@ -159,13 +158,11 @@ void Convertation::startConvertation(const QString& sourceFile, const QString& o
 
   conversionRunning = true;
 
-  // Создаем лямбда-функцию для запуска convertVideo внутри потока
   auto converterLambda = [this, sourceFile, outputFile, outputFormat, includeAudio]() {
     this->convertVideo(sourceFile, outputFile, outputFormat, includeAudio);
     this->conversionFinished();
     conversionRunning = false;
   };
 
-  // Запускаем лямбда-функцию в отдельном потоке
   QtConcurrent::run(converterLambda);
 }
