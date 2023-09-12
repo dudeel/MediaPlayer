@@ -10,10 +10,6 @@ add_subdirectory(player)
 set(PLAYER_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/player)
 file(GLOB_RECURSE PLAYER_SRC_FILES ${PLAYER_SRC_DIR}/*.cpp ${PLAYER_SRC_DIR}/*.h ${PLAYER_SRC_DIR}/*.ui)
 
-#add_subdirectory(save-load-settings)
-#set(SAVELOADSETTINGS_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/save-load-settings)
-#file(GLOB_RECURSE SAVELOADSETTINGS_SRC_FILES ${SAVELOADSETTINGS_SRC_DIR}/*.cpp ${SAVELOADSETTINGS_SRC_DIR}/*.h ${SAVELOADSETTINGS_SRC_DIR}/*.ui)
-
 add_subdirectory(convertation)
 set(CONVERTATION_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/convertation)
 file(GLOB_RECURSE CONVERTATION_SRC_FILES ${CONVERTATION_SRC_DIR}/*.cpp ${CONVERTATION_SRC_DIR}/*.h ${CONVERTATION_SRC_DIR}/*.ui)
@@ -22,8 +18,5 @@ add_executable(${PROJECT_NAME}
 	${MEDIAPLAYER_SRC_FILES} 
 	${SOUND_SRC_FILES} 
         ${PLAYER_SRC_FILES}
-#	${SAVELOADSETTINGS_SRC_FILES}
         ${CONVERTATION_SRC_FILES}
-        convertation/convertation.h convertation/convertation.cpp
-        convertation/convertation-window.h convertation/convertation-window.cpp convertation/convertation-window.ui
 )

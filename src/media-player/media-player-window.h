@@ -34,7 +34,7 @@ private:
   QTimer* m_timer;
   std::vector<std::string> classes;
 
-  void yolov3();
+  void yolov3(cv::VideoCapture& videoStream);
   void postprocess(cv::Mat& frame, const std::vector<cv::Mat>& output, float threshold_confidence,
                    const std::vector<std::string>& classes);
 

@@ -14,7 +14,6 @@
 #include <QScopedPointer>
 
 #include "convertation/convertation.h"
-#include "convertation/convertation-window.h"
 
 MediaPlayerWindow::MediaPlayerWindow(QWidget* parent)
   : QMainWindow(parent), ui(new Ui::MediaPlayerWindow), video_widget(nullptr)
@@ -118,34 +117,24 @@ void MediaPlayerWindow::initAddons()
   QString outputFile = "/home/user/project/MediaPlayer/data/result/Monkey";
   bool audio = true;
 
-  ConvertationWindow* convertationWindow = new ConvertationWindow();
-  QObject::connect(ui->mp4, &QAction::triggered, convertation,
-                   [convertation, sourceFile, outputFile, audio, convertationWindow]() {
-                     convertationWindow->show();
-                     //    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::MP4,
-                     //    audio);
-                   });
+  QObject::connect(ui->mp4, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
+    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::MP4, audio);
+  });
 
-  QObject::connect(ui->avi, &QAction::triggered, convertation,
-                   [convertation, sourceFile, outputFile, audio, convertationWindow]() {
-                     convertationWindow->show();
-                     //    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::AVI,
-                     //    audio);
-                   });
+  QObject::connect(ui->avi, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
+    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::AVI, audio);
+  });
 
-  QObject::connect(ui->webm, &QAction::triggered, convertation,
-                   [convertation, sourceFile, outputFile, audio, convertationWindow]() {
-                     convertationWindow->show();
-                     //    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::WebM,
-                     //    audio);
-                   });
+  QObject::connect(ui->webm, &QAction::triggered, convertation, [convertation, sourceFile, outputFile, audio]() {
+    convertation->startConvertation(sourceFile, outputFile, Convertation::OutputFormat::WebM, audio);
+  });
 }
 
-void MediaPlayerWindow::yolov3()
+void MediaPlayerWindow::yolov3(cv::VideoCapture& videoStream)
 {
   if (!m_yolo_enabled)
     return;
-  // Загрузка YOLOv3
+
   const std::string model_config = "/home/user/project/MediaPlayer/libs/yolov3.cfg";
   const std::string model_weights = "/home/user/project/MediaPlayer/libs/yolov3.weights";
   const std::string model_classes = "/home/user/project/MediaPlayer/libs/coco.names";
@@ -154,7 +143,6 @@ void MediaPlayerWindow::yolov3()
   net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
   net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
 
-  // Загрузка имен классов
   std::ifstream classNames(model_classes);
   if (classNames.is_open())
   {
@@ -169,24 +157,24 @@ void MediaPlayerWindow::yolov3()
     qCritical() << "Не удалось открыть файл с именами классов";
   }
 
-  // Подготовка
-  cv::Mat img = cv::imread("/путь/к/изображению.jpg");
-  cv::Mat blob;
-  cv::dnn::blobFromImage(img, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
-  net.setInput(blob);
+  cv::Mat frame;
+  while (videoStream.read(frame))
+  {
+    cv::Mat blob;
+    cv::dnn::blobFromImage(frame, blob, 1 / 255.0, cv::Size(416, 416), cv::Scalar(), true, false);
+    net.setInput(blob);
 
-  // Прогнозирование
-  std::vector<std::string> outputBlobNames = net.getUnconnectedOutLayersNames();
-  std::vector<cv::Mat> outputBlobs;
-  net.forward(outputBlobs, outputBlobNames);
+    std::vector<std::string> outputBlobNames = net.getUnconnectedOutLayersNames();
+    std::vector<cv::Mat> outputBlobs;
+    net.forward(outputBlobs, outputBlobNames);
 
-  float threshold_confidence = 0.5;
-  postprocess(img, outputBlobs, threshold_confidence, classes);
+    float threshold_confidence = 0.5;
+    postprocess(frame, outputBlobs, threshold_confidence, classes);
 
-  // Отображение результата
-  cv::namedWindow("MediaPlayer", cv::WINDOW_NORMAL);
-  cv::imshow("MediaPlayer", img);
-  cv::waitKey(0);
+    cv::imshow("MediaPlayer", frame);
+    if (cv::waitKey(1) >= 0)
+      break;  // Break the loop if a key is pressed
+  }
 }
 
 void MediaPlayerWindow::postprocess(cv::Mat& frame, const std::vector<cv::Mat>& output, float threshold_confidence,
