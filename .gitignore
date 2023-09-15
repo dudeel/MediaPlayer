@@ -1,2 +1,7 @@
 [Bb]uild/
+[Ll]ibs/
+
+.git
+
 *.user
+.clang-format

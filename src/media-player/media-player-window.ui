@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MediaPlayerWindow</class>
+ <widget class="QMainWindow" name="MediaPlayerWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>406</width>
+    <height>394</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MediaPlayer</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="minimumSize">
+    <size>
+     <width>400</width>
+     <height>350</height>
+    </size>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="10,0,1">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetMinAndMaxSize</enum>
+    </property>
+    <item>
+     <layout class="QVBoxLayout" name="mediaBox">
+      <property name="spacing">
+       <number>100</number>
+      </property>
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMaximumSize</enum>
+      </property>
+     </layout>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>1</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0">
+      <property name="spacing">
+       <number>1</number>
+      </property>
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMinimumSize</enum>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMinimumSize</enum>
+        </property>
+        <item>
+         <widget class="QLabel" name="currentTimeText">
+          <property name="minimumSize">
+           <size>
+            <width>64</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>64</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>26:48</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignHCenter|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSlider" name="timeSlider">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="maxTimeText">
+          <property name="minimumSize">
+           <size>
+            <width>64</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>64</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>11:32:42</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignHCenter|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMinimumSize</enum>
+        </property>
+        <item>
+         <widget class="QPushButton" name="stopButton">
+          <property name="minimumSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>P</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="previewButton">
+          <property name="minimumSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>B</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pauseButton">
+          <property name="minimumSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>St</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="nextButton">
+          <property name="minimumSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>N</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="soundLayout">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinimumSize</enum>
+          </property>
+          <item>
+           <widget class="QPushButton" name="muteButton">
+            <property name="minimumSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>S</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="volumeSlider">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="volumeLabel">
+            <property name="minimumSize">
+             <size>
+              <width>40</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>40</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>100%</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>406</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="fileMenu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <widget class="QMenu" name="convertMenu">
+     <property name="title">
+      <string>Конвертировать</string>
+     </property>
+     <addaction name="mp4"/>
+     <addaction name="avi"/>
+     <addaction name="webm"/>
+    </widget>
+    <addaction name="openFile"/>
+    <addaction name="actionYOLOv3"/>
+    <addaction name="separator"/>
+    <addaction name="convertMenu"/>
+    <addaction name="separator"/>
+    <addaction name="exit"/>
+   </widget>
+   <widget class="QMenu" name="playMenu">
+    <property name="title">
+     <string>Воспроизведение</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="timePreview"/>
+    <addaction name="timeNext"/>
+    <addaction name="separator"/>
+    <addaction name="playVideo"/>
+    <addaction name="stopVideo"/>
+   </widget>
+   <widget class="QMenu" name="audioMenu">
+    <property name="title">
+     <string>Аудио</string>
+    </property>
+    <addaction name="addVolume"/>
+    <addaction name="removeVolume"/>
+    <addaction name="enableVolume"/>
+   </widget>
+   <addaction name="fileMenu"/>
+   <addaction name="playMenu"/>
+   <addaction name="audioMenu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="openFile">
+   <property name="text">
+    <string> Открыть файл...</string>
+   </property>
+  </action>
+  <action name="exit">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="x02">
+   <property name="text">
+    <string>0.25x</string>
+   </property>
+  </action>
+  <action name="x05">
+   <property name="text">
+    <string>0.50x</string>
+   </property>
+  </action>
+  <action name="x10">
+   <property name="text">
+    <string>x1.00 (обычное)</string>
+   </property>
+  </action>
+  <action name="x15">
+   <property name="text">
+    <string>x1.50</string>
+   </property>
+  </action>
+  <action name="x20">
+   <property name="text">
+    <string>x2.00</string>
+   </property>
+  </action>
+  <action name="timeNext">
+   <property name="text">
+    <string>Скачек вперёд</string>
+   </property>
+  </action>
+  <action name="timePreview">
+   <property name="text">
+    <string>Скачек назад</string>
+   </property>
+  </action>
+  <action name="playVideo">
+   <property name="text">
+    <string>Воспроизвести</string>
+   </property>
+  </action>
+  <action name="stopVideo">
+   <property name="text">
+    <string>Стоп</string>
+   </property>
+  </action>
+  <action name="addVolume">
+   <property name="text">
+    <string>Увеличить громкость</string>
+   </property>
+  </action>
+  <action name="removeVolume">
+   <property name="text">
+    <string>Уменьшить громкость</string>
+   </property>
+  </action>
+  <action name="enableVolume">
+   <property name="text">
+    <string>Выключить звук</string>
+   </property>
+  </action>
+  <action name="mp4">
+   <property name="text">
+    <string>MP4</string>
+   </property>
+  </action>
+  <action name="avi">
+   <property name="text">
+    <string>AVI</string>
+   </property>
+  </action>
+  <action name="webm">
+   <property name="text">
+    <string>WebM</string>
+   </property>
+  </action>
+  <action name="mkv">
+   <property name="text">
+    <string>MKV</string>
+   </property>
+  </action>
+  <action name="actionYOLOv3">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>YOLOv3</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
