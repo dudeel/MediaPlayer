@@ -86,5 +86,4 @@ public:
   void pause();
   void preview();
   void next();
-  void setSpeed(qreal speed);
 };

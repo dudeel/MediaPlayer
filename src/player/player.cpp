@@ -261,35 +261,3 @@ Player::~Player()
     stopPipelineWatch();
   }
 }
-
-void Player::setSpeed(qreal speed)
-{
-  qDebug() << "Метод setSpeed вызван.";
-
-  if (m_pipeline)
-  {
-    qDebug() << "Пайплайн существует.";
-    QGst::ElementPtr element = m_pipeline;
-
-    if (element.isNull())
-    {
-      qDebug() << "Element is null";
-      return;
-    }
-
-    if (speed >= 0.25 && speed <= 2.0)
-    {
-      qDebug() << speed;
-      element->setProperty("speed", speed);
-    }
-    else
-    {
-      qWarning() << "Некорректное значение скорости воспроизведения. Допустимый диапазон: 0.25 - 2.0";
-      return;
-    }
-  }
-  else
-  {
-    qWarning() << "Пайплайн не инициализирован.";
-  }
-}
