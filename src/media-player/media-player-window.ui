@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MediaPlayer</string>
+   <string>Media Player</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
@@ -75,7 +75,7 @@
            </size>
           </property>
           <property name="text">
-           <string>26:48</string>
+           <string>00:00:00</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignHCenter|Qt::AlignTop</set>
@@ -84,6 +84,9 @@
         </item>
         <item>
          <widget class="QSlider" name="timeSlider">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -116,7 +119,7 @@
            </size>
           </property>
           <property name="text">
-           <string>11:32:42</string>
+           <string>00:00:00</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignHCenter|Qt::AlignTop</set>
@@ -132,6 +135,9 @@
         </property>
         <item>
          <widget class="QPushButton" name="stopButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>32</width>
@@ -145,12 +151,19 @@
            </size>
           </property>
           <property name="text">
-           <string>P</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="media-playback-stop">
+            <normaloff>.</normaloff>.</iconset>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="previewButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>32</width>
@@ -164,12 +177,19 @@
            </size>
           </property>
           <property name="text">
-           <string>B</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="media-seek-backward">
+            <normaloff>.</normaloff>.</iconset>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pauseButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>32</width>
@@ -183,12 +203,19 @@
            </size>
           </property>
           <property name="text">
-           <string>St</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="media-playback-pause">
+            <normaloff>.</normaloff>.</iconset>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="nextButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>32</width>
@@ -202,7 +229,11 @@
            </size>
           </property>
           <property name="text">
-           <string>N</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="media-seek-forward">
+            <normaloff>.</normaloff>.</iconset>
           </property>
          </widget>
         </item>
@@ -211,9 +242,12 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::MinimumExpanding</enum>
+          </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>40</width>
+            <width>10</width>
             <height>20</height>
            </size>
           </property>
@@ -226,6 +260,9 @@
           </property>
           <item>
            <widget class="QPushButton" name="muteButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>32</width>
@@ -239,12 +276,19 @@
              </size>
             </property>
             <property name="text">
-             <string>S</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset theme="audio-volume-muted">
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QSlider" name="volumeSlider">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="minimumSize">
              <size>
               <width>120</width>
@@ -277,7 +321,7 @@
              </size>
             </property>
             <property name="text">
-             <string>100%</string>
+             <string>0%</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -306,6 +350,9 @@
      <string>Файл</string>
     </property>
     <widget class="QMenu" name="convertMenu">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Конвертировать</string>
      </property>
@@ -313,8 +360,42 @@
      <addaction name="avi"/>
      <addaction name="webm"/>
     </widget>
+    <widget class="QMenu" name="menu_RTSP">
+     <property name="tearOffEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Воспроизводить по RTSP...</string>
+     </property>
+     <property name="icon">
+      <iconset theme="network-wireless"/>
+     </property>
+     <property name="separatorsCollapsible">
+      <bool>false</bool>
+     </property>
+     <widget class="QMenu" name="intervalMenu">
+      <property name="whatsThis">
+       <string/>
+      </property>
+      <property name="title">
+       <string>Интервал</string>
+      </property>
+      <property name="toolTipsVisible">
+       <bool>true</bool>
+      </property>
+      <addaction name="action5s"/>
+      <addaction name="action10s"/>
+      <addaction name="action15"/>
+      <addaction name="action30s"/>
+      <addaction name="action60"/>
+     </widget>
+     <addaction name="rtspURI"/>
+     <addaction name="separator"/>
+     <addaction name="autoChanel"/>
+     <addaction name="intervalMenu"/>
+    </widget>
     <addaction name="openFile"/>
-    <addaction name="actionYOLOv3"/>
+    <addaction name="menu_RTSP"/>
     <addaction name="separator"/>
     <addaction name="convertMenu"/>
     <addaction name="separator"/>
@@ -329,6 +410,7 @@
     <addaction name="timeNext"/>
     <addaction name="separator"/>
     <addaction name="playVideo"/>
+    <addaction name="separator"/>
     <addaction name="stopVideo"/>
    </widget>
    <widget class="QMenu" name="audioMenu">
@@ -337,79 +419,119 @@
     </property>
     <addaction name="addVolume"/>
     <addaction name="removeVolume"/>
+    <addaction name="separator"/>
     <addaction name="enableVolume"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Нейросети</string>
+    </property>
+    <addaction name="yolov3"/>
    </widget>
    <addaction name="fileMenu"/>
    <addaction name="playMenu"/>
    <addaction name="audioMenu"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="openFile">
+   <property name="icon">
+    <iconset theme="folder">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string> Открыть файл...</string>
    </property>
   </action>
   <action name="exit">
+   <property name="icon">
+    <iconset theme="application-exit">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string>Выход</string>
    </property>
   </action>
-  <action name="x02">
-   <property name="text">
-    <string>0.25x</string>
-   </property>
-  </action>
-  <action name="x05">
-   <property name="text">
-    <string>0.50x</string>
-   </property>
-  </action>
-  <action name="x10">
-   <property name="text">
-    <string>x1.00 (обычное)</string>
-   </property>
-  </action>
-  <action name="x15">
-   <property name="text">
-    <string>x1.50</string>
-   </property>
-  </action>
-  <action name="x20">
-   <property name="text">
-    <string>x2.00</string>
-   </property>
-  </action>
   <action name="timeNext">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="media-seek-forward">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string>Скачек вперёд</string>
    </property>
   </action>
   <action name="timePreview">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="media-seek-backward">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string>Скачек назад</string>
    </property>
   </action>
   <action name="playVideo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="media-playback-pause">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string>Воспроизвести</string>
    </property>
   </action>
   <action name="stopVideo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="media-playback-stop">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string>Стоп</string>
    </property>
   </action>
   <action name="addVolume">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="audio-volume-medium">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string>Увеличить громкость</string>
    </property>
   </action>
   <action name="removeVolume">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="audio-volume-low">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string>Уменьшить громкость</string>
    </property>
   </action>
   <action name="enableVolume">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="audio-volume-muted">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string>Выключить звук</string>
    </property>
@@ -429,17 +551,53 @@
     <string>WebM</string>
    </property>
   </action>
-  <action name="mkv">
+  <action name="yolov3">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>MKV</string>
+    <string>YOLOv3</string>
    </property>
   </action>
-  <action name="actionYOLOv3">
+  <action name="rtspURI">
+   <property name="text">
+    <string>RTSP</string>
+   </property>
+  </action>
+  <action name="autoChanel">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>YOLOv3</string>
+    <string>Автоматическое переключение</string>
+   </property>
+  </action>
+  <action name="action5s">
+   <property name="text">
+    <string>5s</string>
+   </property>
+  </action>
+  <action name="action10s">
+   <property name="text">
+    <string>10s</string>
+   </property>
+  </action>
+  <action name="action15">
+   <property name="text">
+    <string>15s</string>
+   </property>
+  </action>
+  <action name="action30s">
+   <property name="text">
+    <string>30s</string>
+   </property>
+  </action>
+  <action name="action60">
+   <property name="text">
+    <string>60s</string>
    </property>
   </action>
  </widget>

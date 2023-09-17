@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 cmake_policy(SET CMP0079 NEW)
-project(MediaPlayer)
+project(NewMediaPlayer)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -14,8 +14,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/modules)
 
 find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
-find_package(Qt5GStreamer REQUIRED)
 find_package(OpenCV REQUIRED)
+
+find_package(Qt5GStreamer REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GST REQUIRED gstreamer-1.0)
+
+include_directories(${GST_INCLUDE_DIRS})
+link_directories(${GST_LIBRARY_DIRS})
+add_definitions(${GST_CFLAGS_OTHER})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -31,6 +38,7 @@ add_subdirectory(src)
 target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt5::Core
     Qt5::Widgets
+    ${GST_LIBRARIES}
     ${GSTREAMER_LIBRARIES}
     ${GST_LIBRARIES}
     ${GST_LIBRARY_DIRS}
